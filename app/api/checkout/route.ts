@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
     return new Response(JSON.stringify({ url: session.url }), { status: 200, headers: { 'Content-Type': 'application/json' } })
   } catch (err) {
     console.error('Stripe checkout error:', err)
-    return new Response(JSON.stringify({ error: 'decided' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify({ error: '決済の準備に失敗しました' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
   }
 }
+
