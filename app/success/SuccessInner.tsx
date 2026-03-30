@@ -92,7 +92,14 @@ export default function SuccessInner() {
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 py-8 px-4">
       <header className="text-center mb-8">
         <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-2">🐾 STAMPON</h1>
-        {phase === "generating" && <p className="text-pink-500 font-bold text-lg animate-pulse">{masterDataURL === null ? "キャラクターを生成中..." : completedCount === 0 ? "キャラクター確定！スタンプを生成中..." : "スタンプ生成中... " + completedCount + " / " + STAMP_COUNT + "枚"}</p>}
+        {phase === "generating" && (
+          <div className="text-center">
+            <p className="text-pink-500 font-bold text-lg animate-pulse">
+              {masterDataURL === null ? "キャラクターを生成中..." : completedCount === 0 ? "キャラクター確定！スタンプを生成中..." : "スタンプ生成中... " + completedCount + " / " + STAMP_COUNT + "枚"}
+            </p>
+            <p className="text-sm text-gray-400 mt-1">1枚約30秒・16枚で約5〜6分かかります。このままお待ちください☕</p>
+          </div>
+        )}
         {phase === "done" && <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">🎉 {STAMP_COUNT}枚完成！</p>}
       </header>
       <div className="max-w-2xl mx-auto flex flex-col gap-6">
@@ -107,3 +114,4 @@ export default function SuccessInner() {
     </div>
   )
 }
+
