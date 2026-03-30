@@ -7,7 +7,7 @@ export default function LegalPage() {
           <table className="w-full text-sm">
             <tbody>
               {[
-                ['販売業者', 'SHIPS合同会社'],
+                ['販売業者', 'SHIPS.LLC合同会社'],
                 ['運営責任者', '東谷 伸樹'],
                 ['所在地', '〒565-0815 大阪府吹田市千里丘北1-24-309'],
                 ['メールアドレス', 'ships.llc@gmail.com'],

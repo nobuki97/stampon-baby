@@ -7,7 +7,7 @@ export default function TermsPage() {
         <div className="flex flex-col gap-8 text-sm text-gray-700 leading-relaxed">
           <section>
             <h2 className="font-black text-gray-600 mb-2">第1条（適用）</h2>
-            <p>本規約は、SHIPS合同会社（以下「当社」）が提供するWebサービス「STAMPON」（以下「本サービス」）の利用条件を定めるものです。ユーザーは本規約に同意の上、本サービスをご利用ください。</p>
+            <p>本規約は、SHIPS.LLC合同会社（以下「当社」）が提供するWebサービス「STAMPON」（以下「本サービス」）の利用条件を定めるものです。ユーザーは本規約に同意の上、本サービスをご利用ください。</p>
           </section>
           <section>
             <h2 className="font-black text-gray-600 mb-2">第2条（サービス内容）</h2>
