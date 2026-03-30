@@ -7,7 +7,7 @@ export default function PrivacyPage() {
         <div className="flex flex-col gap-8 text-sm text-gray-700 leading-relaxed">
           <section>
             <h2 className="font-black text-gray-600 mb-2">1. 事業者情報</h2>
-            <p>SHIPS合同会社（以下「当社」）は、本サービス「STAMPON」におけるお客様の個人情報の取扱いについて、以下のとおりプライバシーポリシーを定めます。</p>
+            <p>SHIPS.LLC合同会社（以下「当社」）は、本サービス「STAMPON」におけるお客様の個人情報の取扱いについて、以下のとおりプライバシーポリシーを定めます。</p>
           </section>
           <section>
             <h2 className="font-black text-gray-600 mb-2">2. 収集する情報</h2>
