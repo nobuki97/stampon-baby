@@ -54,18 +54,25 @@ async function generateStamp(apiKey: string, breed: string, color: string, patte
   return data.data[0].b64_json
 }
 
+function addWatermark(b64: string): Promise<string> {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined") { resolve(b64); return }
+    resolve(b64)
+  })
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY
   if (!apiKey || apiKey === "your_key_here") {
     return new Response(JSON.stringify({ error: "OpenAI API key が設定されていません。" }), { status: 500, headers: { "Content-Type": "application/json" } })
   }
 
-  let photo: string, breed: string, color: string, pattern: string, feature: string, petName: string, style: string, phrases: string[]
+  let photo: string, breed: string, color: string, pattern: string, feature: string, petName: string, style: string, phrases: string[], trial: boolean
   try {
     const body = await req.json()
-    photo = body.photo; breed = body.breed; color = body.color; pattern = body.pattern ?? ""; feature = body.feature ?? ""; petName = body.petName ?? ""; style = body.style ?? "ghibli"; phrases = Array.isArray(body.phrases) ? body.phrases : []
+    photo = body.photo; breed = body.breed; color = body.color; pattern = body.pattern ?? ""; feature = body.feature ?? ""; petName = body.petName ?? ""; style = body.style ?? "ghibli"; phrases = Array.isArray(body.phrases) ? body.phrases : []; trial = body.trial === true
     if (!photo || !breed || !color) throw new Error("missing required fields")
-    if (phrases.length !== 16) throw new Error("phrases must have 16 items")
+    if (!trial && phrases.length !== 16) throw new Error("phrases must have 16 items")
   } catch {
     return new Response(JSON.stringify({ error: "リクエストが不正です" }), { status: 400, headers: { "Content-Type": "application/json" } })
   }
@@ -75,20 +82,24 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       const send = (data: object) => { controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`)) }
       try {
-        const masterB64 = await generateMaster(apiKey, photo, breed, color, pattern, feature, petName, style)
-        send({ type: "master", dataUrl: `data:image/png;base64,${masterB64}` })
-
-        const BATCH = 4
-        for (let i = 0; i < 16; i += BATCH) {
-          const batch = Array.from({ length: Math.min(BATCH, 16 - i) }, (_, j) => i + j)
-          const results = await Promise.all(
-            batch.map(idx => generateStamp(apiKey, breed, color, pattern, feature, petName, style, phrases[idx], idx))
-          )
-          results.forEach((b64, j) => {
-            send({ type: "stamp", index: i + j, dataUrl: `data:image/png;base64,${b64}` })
-          })
+        if (trial) {
+          // お試しモード：1枚だけ生成
+          const b64 = await generateStamp(apiKey, breed, color, pattern, feature, petName, style, phrases[0] ?? "お試し", 0)
+          // サーバー側で透かしは入れられないのでそのまま返す（低解像度感はCanvas縮小で対応）
+          send({ type: "stamp", index: 0, dataUrl: `data:image/png;base64,${b64}`, trial: true })
+          send({ type: "done" })
+        } else {
+          // 通常モード：マスター＋16枚並列生成
+          const masterB64 = await generateMaster(apiKey, photo, breed, color, pattern, feature, petName, style)
+          send({ type: "master", dataUrl: `data:image/png;base64,${masterB64}` })
+          const BATCH = 4
+          for (let i = 0; i < 16; i += BATCH) {
+            const batch = Array.from({ length: Math.min(BATCH, 16 - i) }, (_, j) => i + j)
+            const results = await Promise.all(batch.map(idx => generateStamp(apiKey, breed, color, pattern, feature, petName, style, phrases[idx], idx)))
+            results.forEach((b64, j) => { send({ type: "stamp", index: i + j, dataUrl: `data:image/png;base64,${b64}` }) })
+          }
+          send({ type: "done" })
         }
-        send({ type: "done" })
       } catch (err) {
         send({ type: "error", message: err instanceof Error ? err.message : "生成に失敗しました" })
       } finally {
