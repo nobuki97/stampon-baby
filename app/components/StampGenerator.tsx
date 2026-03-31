@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState, useRef, useCallback } from 'react'
 import { STAMP_TEXTS } from '@/app/lib/constants'
@@ -15,6 +15,35 @@ const STYLES: { value: StyleType; label: string; emoji: string }[] = [
 
 const FIXED_PHRASES = [...STAMP_TEXTS] as string[]
 
+function resizeImage(file: File, maxSize = 1024): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = () => reject(new Error('ファイル読み込みエラー'))
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onerror = () => reject(new Error('画像読み込みエラー'))
+      img.onload = () => {
+        const { width, height } = img
+        let w = width
+        let h = height
+        if (w > maxSize || h > maxSize) {
+          if (w > h) { h = Math.round(h * maxSize / w); w = maxSize }
+          else { w = Math.round(w * maxSize / h); h = maxSize }
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = w
+        canvas.height = h
+        const ctx = canvas.getContext('2d')
+        if (!ctx) { reject(new Error('canvas error')); return }
+        ctx.drawImage(img, 0, 0, w, h)
+        resolve(canvas.toDataURL('image/jpeg', 0.92))
+      }
+      img.src = e.target?.result as string
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function StampGenerator() {
   const [phase, setPhase] = useState<Phase>('setup')
   const [photo, setPhoto] = useState<string | null>(null)
@@ -30,10 +59,13 @@ export default function StampGenerator() {
   const [error, setError] = useState<string | null>(null)
   const [trialDataURL, setTrialDataURL] = useState<string | null>(null)
 
-  const handleFile = (file: File) => {
-    const reader = new FileReader()
-    reader.onload = (e) => setPhoto(e.target?.result as string)
-    reader.readAsDataURL(file)
+  const handleFile = async (file: File) => {
+    try {
+      const resized = await resizeImage(file, 1024)
+      setPhoto(resized)
+    } catch {
+      setError('写真の読み込みに失敗しました。別の写真をお試しください。')
+    }
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
