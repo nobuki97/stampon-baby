@@ -50,7 +50,7 @@ export const COLOR_THEMES: ColorTheme[] = [
 export const POSES: string[] = [
   'paws pressed together in gratitude, warm smile',
   'stretching and yawning, sleepy eyes',
-  'slumped shoulders, droopy eyes, exhausted',
+  'holding a steaming coffee cup with both paws, gentle warm smile, comforting pose',
   'curled up sleeping, eyes closed, Z bubble',
   'bowing politely, friendly smile',
   'confident thumbs-up, nodding',
