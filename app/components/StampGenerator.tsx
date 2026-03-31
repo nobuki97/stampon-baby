@@ -2,8 +2,6 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { STAMP_TEXTS } from '@/app/lib/constants'
-import StampCard from './StampCard'
-import DownloadSection from './DownloadSection'
 
 type StyleType = 'ghibli' | 'watercolor' | 'chibi' | 'pastel'
 type Phase = 'setup' | 'trial_generating' | 'trial_done' | 'generating' | 'done'
@@ -186,9 +184,12 @@ export default function StampGenerator() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-bold text-gray-600">🏷️ ペットの名前</label>
+            <label className="text-sm font-bold text-gray-600">🏷️ ペットの名前
+              <span className="ml-2 text-xs font-normal text-pink-400">入力すると首元に名札がつきます</span>
+            </label>
             <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="例：そら" className={inputClass} />
           </div>
+
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-600">🐾 ペットの種類 <span className="text-pink-400">*</span></label>
             <input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder="例：フレンチブルドッグ" className={inputClass} />
@@ -263,3 +264,9 @@ export default function StampGenerator() {
     </div>
   )
 }
+```
+
+変更点は1箇所だけです：
+```
+🏷️ ペットの名前
+入力すると首元に名札がつきます  ← これを追加
