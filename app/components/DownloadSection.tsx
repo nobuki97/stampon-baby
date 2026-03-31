@@ -91,8 +91,8 @@ export default function DownloadSection({ stampDataURLs }: Props) {
       </div>
 
       <div className="flex flex-col gap-3 bg-pink-50 rounded-2xl p-4 border border-pink-100">
-        <p className="text-sm font-black text-pink-500">[スマホ] 画像として使う</p>
-        <p className="text-xs text-gray-500 leading-relaxed">LINEに登録せず画像スタンプとしてそのまま使えます。ボタンを押すと1枚ずつ連続で画像フォルダに保存されます。保存後すぐに使えます。</p>
+        <p className="text-sm font-black text-pink-500">C. LINEに登録せず画像として使う（一番かんたん）</p>
+        <p className="text-xs text-gray-500 leading-relaxed">審査なし・登録なし・無料。16枚をスマホのギャラリーに保存して、LINEのトークで画像として送るだけです。</p>
         <button onClick={handleSave} disabled={saving}
           className="w-full py-4 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
           {saving ? '保存中... ' + progress + ' / 16枚' : saved ? '保存完了！（もう一度保存）' : '16枚を画像フォルダに保存する'}
@@ -105,25 +105,19 @@ export default function DownloadSection({ stampDataURLs }: Props) {
       </div>
 
       <div className="flex flex-col gap-3 bg-green-50 rounded-2xl p-4 border border-green-100">
-        <p className="text-sm font-black text-green-600">[LINE] 16枚をLINEスタンプとして使う</p>
-        <p className="text-xs text-gray-500 leading-relaxed">ZIPファイルをダウンロードしてLINEスタンプに登録します。登録時に以下のどちらかを選んでください。</p>
+        <p className="text-sm font-black text-green-600">A. 自分用に無料で使う（LINE Creators Studioアプリから申請）</p>
+        <p className="text-xs text-gray-500 leading-relaxed">スマホの「LINE Creators Studio」アプリで申請。プライベート設定を「非公開」にすれば審査後に自分で無料ダウンロードして使えます。ショップには公開されません。</p>
+        <a href="/guide" className="text-center text-xs text-green-600 font-bold bg-white rounded-xl py-2 border border-green-200">詳しい手順はLINEスタンプ登録ガイドを見る</a>
+      </div>
 
-        <div className="flex flex-col gap-2">
-          <div className="bg-white rounded-xl p-3 border border-green-200">
-            <p className="text-xs font-black text-green-700 mb-1">A. 個人用（すぐ使える・無料）</p>
-            <p className="text-xs text-gray-500 leading-relaxed">登録後すぐ自分用として無料で使えます。販売はできません。</p>
-          </div>
-          <div className="bg-white rounded-xl p-3 border border-green-200">
-            <p className="text-xs font-black text-green-700 mb-1">B. 販売用（審査2〜3日後に販売可）</p>
-            <p className="text-xs text-gray-500 leading-relaxed">審査通過後にLINE Creators Marketで有料販売もできます。</p>
-          </div>
-        </div>
-
+      <div className="flex flex-col gap-3 bg-blue-50 rounded-2xl p-4 border border-blue-100">
+        <p className="text-sm font-black text-blue-600">B. 有料販売する（LINEクリエイターズマーケットから申請）</p>
+        <p className="text-xs text-gray-500 leading-relaxed">ZIPファイルをダウンロードして、LINEクリエイターズマーケット（Web版）から申請。審査通過後にスタンプショップで販売できます。</p>
         <button onClick={handleZip} disabled={zipping}
-          className="w-full py-4 rounded-full bg-gradient-to-r from-green-400 to-teal-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+          className="w-full py-4 rounded-full bg-gradient-to-r from-blue-400 to-teal-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
           {zipping ? '準備中...' : zipped ? 'ダウンロード完了！（再ダウンロード）' : 'ZIPをダウンロードする'}
         </button>
-        <a href="/guide" className="text-center text-xs text-green-500 font-bold">LINEスタンプ申請ガイドを見る</a>
+        <a href="/guide" className="text-center text-xs text-blue-500 font-bold">詳しい手順はLINEスタンプ登録ガイドを見る</a>
       </div>
 
     </div>
