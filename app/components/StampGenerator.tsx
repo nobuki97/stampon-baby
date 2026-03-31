@@ -120,7 +120,7 @@ export default function StampGenerator() {
     setIsRedirecting(true)
     setError(null)
     try {
-      sessionStorage.setItem('stampon_photo', photo)
+      localStorage.setItem('stampon_photo', photo)
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
