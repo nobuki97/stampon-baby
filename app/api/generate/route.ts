@@ -1,4 +1,4 @@
-﻿import { NextRequest } from "next/server"
+import { NextRequest } from "next/server"
 import { POSES } from "@/app/lib/constants"
 
 const OPENAI_BASE = "https://api.openai.com/v1"
@@ -44,21 +44,20 @@ async function generateStamp(apiKey: string, breed: string, color: string, patte
   const pose = POSES[index]
   const characterDesc = buildCharacterDesc(breed, color, pattern, feature, petName)
   const stylePrompt = STYLE_PROMPTS[style] ?? STYLE_PROMPTS.ghibli
+  const nameTagPrompt = petName ? `The character has a small wooden name tag hanging from its neck with the name "${petName}" written on it in handwritten style. ` : ""
   const res = await fetch(`${OPENAI_BASE}/images/generations`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({ model: "gpt-image-1", prompt: `LINE sticker of a cute ${characterDesc}. Pose: ${pose}. Japanese text "${phrase}" at the bottom in bold rounded white letters with dark outline. Style: ${stylePrompt}, large expressive eyes, white background, square format, cute decorative border.`, n: 1, size: "1024x1024" }),
+    body: JSON.stringify({
+      model: "gpt-image-1",
+      prompt: `LINE sticker of a cute ${characterDesc}. Pose: ${pose}. ${nameTagPrompt}Japanese text "${phrase}" at the bottom in bold rounded white letters with dark outline. Style: ${stylePrompt}, large expressive eyes, white background, square format, cute decorative border.`,
+      n: 1,
+      size: "1024x1024"
+    }),
   })
   if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error((err as { error?: { message?: string } }).error?.message ?? `スタンプ ${index + 1} の生成に失敗しました`) }
   const data = await res.json() as { data: { b64_json: string }[] }
   return data.data[0].b64_json
-}
-
-function addWatermark(b64: string): Promise<string> {
-  return new Promise((resolve) => {
-    if (typeof window !== "undefined") { resolve(b64); return }
-    resolve(b64)
-  })
 }
 
 export async function POST(req: NextRequest) {
@@ -70,7 +69,15 @@ export async function POST(req: NextRequest) {
   let photo: string, breed: string, color: string, pattern: string, feature: string, petName: string, style: string, phrases: string[], trial: boolean
   try {
     const body = await req.json()
-    photo = body.photo; breed = body.breed; color = body.color; pattern = body.pattern ?? ""; feature = body.feature ?? ""; petName = body.petName ?? ""; style = body.style ?? "ghibli"; phrases = Array.isArray(body.phrases) ? body.phrases : []; trial = body.trial === true
+    photo = body.photo
+    breed = body.breed
+    color = body.color
+    pattern = body.pattern ?? ""
+    feature = body.feature ?? ""
+    petName = body.petName ?? ""
+    style = body.style ?? "ghibli"
+    phrases = Array.isArray(body.phrases) ? body.phrases : []
+    trial = body.trial === true
     if (!photo || !breed || !color) throw new Error("missing required fields")
     if (!trial && phrases.length !== 16) throw new Error("phrases must have 16 items")
   } catch {
@@ -83,13 +90,10 @@ export async function POST(req: NextRequest) {
       const send = (data: object) => { controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`)) }
       try {
         if (trial) {
-          // お試しモード：1枚だけ生成
           const b64 = await generateStamp(apiKey, breed, color, pattern, feature, petName, style, phrases[0] ?? "お試し", 0)
-          // サーバー側で透かしは入れられないのでそのまま返す（低解像度感はCanvas縮小で対応）
           send({ type: "stamp", index: 0, dataUrl: `data:image/png;base64,${b64}`, trial: true })
           send({ type: "done" })
         } else {
-          // 通常モード：マスター＋16枚並列生成
           const masterB64 = await generateMaster(apiKey, photo, breed, color, pattern, feature, petName, style)
           send({ type: "master", dataUrl: `data:image/png;base64,${masterB64}` })
           const BATCH = 4
