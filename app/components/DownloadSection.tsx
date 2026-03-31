@@ -28,6 +28,12 @@ function dataUrlToBase64(dataUrl: string): string {
   return dataUrl.split(',')[1] ?? ''
 }
 
+function isInAppBrowser(): boolean {
+  if (typeof window === 'undefined') return false
+  const ua = navigator.userAgent.toLowerCase()
+  return ua.includes('line') || ua.includes('instagram') || ua.includes('fbav') || ua.includes('twitter')
+}
+
 export default function DownloadSection({ stampDataURLs }: Props) {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -35,6 +41,7 @@ export default function DownloadSection({ stampDataURLs }: Props) {
   const [zipping, setZipping] = useState(false)
   const [zipped, setZipped] = useState(false)
   const [guideOpen, setGuideOpen] = useState(false)
+  const inAppBrowser = isInAppBrowser()
 
   const handleSaveAll = async () => {
     setSaving(true)
@@ -82,9 +89,27 @@ export default function DownloadSection({ stampDataURLs }: Props) {
     }
   }
 
+  const openInChrome = () => {
+    const url = window.location.href
+    window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`
+  }
+
   return (
     <div className="flex flex-col gap-4">
 
+      {/* LINEブラウザ警告 */}
+      {inAppBrowser && (
+        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-4 flex flex-col gap-3">
+          <p className="text-sm font-black text-yellow-700">⚠️ LINEブラウザではダウンロードできません</p>
+          <p className="text-xs text-yellow-600 leading-relaxed">ダウンロードにはChromeが必要です。下のボタンでChromeを開いてください。</p>
+          <button onClick={openInChrome}
+            className="w-full py-3 rounded-full bg-yellow-400 text-white font-bold text-sm shadow-md hover:opacity-90 active:scale-[0.98] transition-all">
+            Chromeで開く
+          </button>
+        </div>
+      )}
+
+      {/* 画像フォルダに保存 */}
       <div className="flex flex-col gap-3 bg-pink-50 rounded-2xl p-4 border border-pink-100">
         <p className="text-sm font-black text-pink-600">画像フォルダに保存する</p>
         <p className="text-xs text-gray-500 leading-relaxed">16枚をスマホの写真フォルダに保存します。SNSのアイコンや画像としてお使いいただけます。</p>
@@ -99,6 +124,7 @@ export default function DownloadSection({ stampDataURLs }: Props) {
         )}
       </div>
 
+      {/* LINEスタンプとして使う */}
       <div className="flex flex-col gap-3 bg-green-50 rounded-2xl p-4 border border-green-100">
         <p className="text-sm font-black text-green-600">LINEスタンプとして使う</p>
         <p className="text-xs text-gray-500 leading-relaxed">ZIPファイルをダウンロードして、LINEスタンプに登録します。</p>
@@ -114,7 +140,7 @@ export default function DownloadSection({ stampDataURLs }: Props) {
           </div>
         </div>
 
-        <button onClick={handleZip} disabled={zipping}
+        <button onClick={handleZip} disabled={zipping || inAppBrowser}
           className="w-full py-4 rounded-full bg-gradient-to-r from-green-400 to-teal-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
           {zipping ? '準備中...' : zipped ? 'ダウンロード完了！（再ダウンロード）' : 'ZIPをダウンロードする'}
         </button>
