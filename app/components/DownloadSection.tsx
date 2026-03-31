@@ -16,6 +16,7 @@ async function resizeDataUrl(dataUrl: string, w: number, h: number): Promise<str
       canvas.height = h
       const ctx = canvas.getContext('2d')
       if (!ctx) { reject(new Error('canvas context failed')); return }
+      ctx.clearRect(0, 0, w, h)
       ctx.drawImage(img, 0, 0, w, h)
       resolve(canvas.toDataURL('image/png'))
     }
