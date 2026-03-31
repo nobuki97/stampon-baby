@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useCallback } from 'react'
 import { STAMP_TEXTS } from '@/app/lib/constants'
