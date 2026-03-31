@@ -44,7 +44,7 @@ export default function DownloadSection({ stampDataURLs }: Props) {
         const resized = await resizeDataUrl(stampDataURLs[i], 370, 320)
         const link = document.createElement('a')
         link.href = resized
-        link.download = 'stamp_' + String(i + 1).padStart(2, '0') + '.png'
+        link.download = String(i + 1).padStart(2, '0') + '.png'
         link.click()
         await new Promise(r => setTimeout(r, 300))
         setProgress(i + 1)
@@ -62,7 +62,7 @@ export default function DownloadSection({ stampDataURLs }: Props) {
       await Promise.all(
         stampDataURLs.map(async (url, i) => {
           const resized = await resizeDataUrl(url, 370, 320)
-          zip.file('stamp_' + String(i + 1).padStart(2, '0') + '.png', dataUrlToBase64(resized), { base64: true })
+          zip.file(String(i + 1).padStart(2, '0') + '.png', dataUrlToBase64(resized), { base64: true })
         })
       )
       const main = await resizeDataUrl(stampDataURLs[0], 240, 240)
