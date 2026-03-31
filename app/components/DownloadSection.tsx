@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import JSZip from 'jszip'
@@ -81,14 +81,20 @@ export default function DownloadSection({ stampDataURLs }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-3xl p-6 shadow-md border border-pink-100 flex flex-col gap-4">
+    <div className="bg-white rounded-3xl p-6 shadow-md border border-pink-100 flex flex-col gap-6">
 
-      {/* ②スマホ保存ボタン */}
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-bold text-gray-500 text-center">📱 スマホで画像として使う（初心者向け）</p>
+      <div className="text-center">
+        <p className="text-lg font-black text-gray-700">STAMPON</p>
+        <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">16枚完成！</p>
+        <p className="text-sm text-gray-400 mt-1">使い方を選んでください</p>
+      </div>
+
+      <div className="flex flex-col gap-3 bg-pink-50 rounded-2xl p-4 border border-pink-100">
+        <p className="text-sm font-black text-pink-500">[スマホ] 画像として使う</p>
+        <p className="text-xs text-gray-500 leading-relaxed">LINEに登録せず画像スタンプとしてそのまま使えます。ボタンを押すと1枚ずつ連続で画像フォルダに保存されます。保存後すぐに使えます。</p>
         <button onClick={handleSave} disabled={saving}
           className="w-full py-4 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
-          {saving ? '保存中... ' + progress + ' / 16枚' : saved ? '✅ 保存完了！（もう一度保存）' : '📱 16枚をスマホに保存する'}
+          {saving ? '保存中... ' + progress + ' / 16枚' : saved ? '保存完了！（もう一度保存）' : '16枚を画像フォルダに保存する'}
         </button>
         {saving && (
           <div className="w-full bg-pink-100 rounded-full h-2 overflow-hidden">
@@ -97,40 +103,28 @@ export default function DownloadSection({ stampDataURLs }: Props) {
         )}
       </div>
 
-      <div className="border-t border-pink-100" />
+      <div className="flex flex-col gap-3 bg-green-50 rounded-2xl p-4 border border-green-100">
+        <p className="text-sm font-black text-green-600">[LINE] 16枚をLINEスタンプとして使う</p>
+        <p className="text-xs text-gray-500 leading-relaxed">ZIPファイルをダウンロードしてLINEスタンプに登録します。登録時に以下のどちらかを選んでください。</p>
 
-      {/* ①ZIPダウンロードボタン */}
-      <div className="flex flex-col gap-2">
-        <p className="text-xs font-bold text-gray-500 text-center">📦 LINEスタンプとして正式登録する（上級者向け）</p>
-        <button onClick={handleZip} disabled={zipping}
-          className="w-full py-4 rounded-full bg-gradient-to-r from-purple-400 to-blue-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
-          {zipping ? '⏳ 準備中...' : zipped ? '✅ ダウンロード完了！（再ダウンロード）' : '📦 ZIPをダウンロードする'}
-        </button>
-        <a href="/guide" className="text-center text-xs text-pink-400 font-bold">LINEスタンプ申請ガイドを見る →</a>
-      </div>
-
-      {/* スマホ保存後のガイド */}
-      {saved && (
-        <div className="flex flex-col gap-3 mt-2">
-          <h3 className="font-bold text-gray-700 text-base">📂 LINEで使う方法</h3>
-          {[
-            { num: '1', text: '写真アプリを開いて「アルバム」→「＋」→「新規アルバム」を作成' },
-            { num: '2', text: 'アルバム名を「LINEスタンプ」にする' },
-            { num: '3', text: '保存した16枚をそのアルバムに追加する' },
-            { num: '4', text: 'LINEのトークで画像送信ボタンをタップ' },
-            { num: '5', text: '「LINEスタンプ」アルバムを選んでスタンプを送る' },
-          ].map((step) => (
-            <div key={step.num} className="flex gap-3 items-start">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 text-white font-black text-xs flex items-center justify-center shrink-0">{step.num}</div>
-              <p className="text-sm text-gray-600 leading-relaxed pt-0.5">{step.text}</p>
-            </div>
-          ))}
-          <div className="bg-pink-50 border border-pink-200 rounded-2xl p-4 text-xs text-gray-500">
-            <p className="font-bold text-gray-600 mb-1">💡 ポイント</p>
-            <p>アルバムを一度作れば次回からすぐ選べます！</p>
+        <div className="flex flex-col gap-2">
+          <div className="bg-white rounded-xl p-3 border border-green-200">
+            <p className="text-xs font-black text-green-700 mb-1">A. 個人用（すぐ使える・無料）</p>
+            <p className="text-xs text-gray-500 leading-relaxed">登録後すぐ自分用として無料で使えます。販売はできません。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-200">
+            <p className="text-xs font-black text-green-700 mb-1">B. 販売用（審査2〜3日後に販売可）</p>
+            <p className="text-xs text-gray-500 leading-relaxed">審査通過後にLINE Creators Marketで有料販売もできます。</p>
           </div>
         </div>
-      )}
+
+        <button onClick={handleZip} disabled={zipping}
+          className="w-full py-4 rounded-full bg-gradient-to-r from-green-400 to-teal-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
+          {zipping ? '準備中...' : zipped ? 'ダウンロード完了！（再ダウンロード）' : 'ZIPをダウンロードする'}
+        </button>
+        <a href="/guide" className="text-center text-xs text-green-500 font-bold">LINEスタンプ申請ガイドを見る</a>
+      </div>
+
     </div>
   )
 }
