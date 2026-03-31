@@ -9,13 +9,13 @@ type StyleType = 'ghibli' | 'watercolor' | 'chibi' | 'pastel'
 type Phase = 'setup' | 'trial_generating' | 'trial_done' | 'generating' | 'done'
 
 const STYLES: { value: StyleType; label: string; emoji: string }[] = [
-  { value: 'ghibli', label: 'ジブリ風', emoji: '🌿' },
-  { value: 'watercolor', label: '水彩画風', emoji: '🎨' },
-  { value: 'chibi', label: 'ちびキャラ', emoji: '✨' },
+  { value: 'ghibli', label: 'ジブリ風', emoji: '🎨' },
+  { value: 'watercolor', label: '水彩画風', emoji: '🖌️' },
+  { value: 'chibi', label: 'ちびキャラ', emoji: '🐾' },
   { value: 'pastel', label: 'パステル', emoji: '🌸' },
 ]
 
-const DEFAULT_PHRASES = [...STAMP_TEXTS] as string[]
+const FIXED_PHRASES = [...STAMP_TEXTS] as string[]
 
 export default function StampGenerator() {
   const [phase, setPhase] = useState<Phase>('setup')
@@ -26,15 +26,11 @@ export default function StampGenerator() {
   const [feature, setFeature] = useState('')
   const [petName, setPetName] = useState('')
   const [style, setStyle] = useState<StyleType>('ghibli')
-  const [phrases, setPhrases] = useState<string[]>(DEFAULT_PHRASES)
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isRedirecting, setIsRedirecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [trialDataURL, setTrialDataURL] = useState<string | null>(null)
-  const [stampDataURLs, setStampDataURLs] = useState<string[]>([])
-  const [completedCount, setCompletedCount] = useState(0)
-  const [masterDataURL, setMasterDataURL] = useState<string | null>(null)
 
   const handleFile = (file: File) => {
     const reader = new FileReader()
@@ -49,13 +45,6 @@ export default function StampGenerator() {
     if (file?.type.startsWith('image/')) handleFile(file)
   }, [])
 
-  const updatePhrase = (i: number, value: string) => {
-    const next = [...phrases]
-    next[i] = value
-    setPhrases(next)
-  }
-
-  // お試し生成（1枚・透かし入り）
   const handleTrial = async () => {
     if (!photo || !breed.trim() || !color.trim()) return
     setPhase('trial_generating')
@@ -74,7 +63,7 @@ export default function StampGenerator() {
           feature: feature.trim(),
           petName: petName.trim(),
           style,
-          phrases,
+          phrases: FIXED_PHRASES,
           trial: true,
         }),
       })
@@ -114,7 +103,6 @@ export default function StampGenerator() {
     }
   }
 
-  // 決済→16枚生成
   const handleCheckout = async () => {
     if (!photo || !breed.trim() || !color.trim()) return
     setIsRedirecting(true)
@@ -128,7 +116,7 @@ export default function StampGenerator() {
         feature: feature.trim(),
         petName: petName.trim(),
         style,
-        phrases,
+        phrases: FIXED_PHRASES,
       }
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -166,9 +154,9 @@ export default function StampGenerator() {
         </div>
       )}
 
-      {/* セットアップ画面 */}
       {(phase === 'setup' || phase === 'trial_generating' || phase === 'trial_done') && (
         <div className="max-w-sm mx-auto flex flex-col gap-5">
+
           {/* 写真アップロード */}
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-600">📷 ペットの写真（必須）</label>
@@ -188,7 +176,7 @@ export default function StampGenerator() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2 py-12 px-4">
-                  <span className="text-5xl">🐶</span>
+                  <span className="text-5xl">📸</span>
                   <p className="text-sm font-bold text-gray-500">タップして写真を選ぶ</p>
                   <p className="text-xs text-gray-400">またはここにドラッグ＆ドロップ</p>
                 </div>
@@ -199,27 +187,27 @@ export default function StampGenerator() {
 
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-600">🏷️ ペットの名前</label>
-            <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="例: ぽち" className={inputClass} />
+            <input type="text" value={petName} onChange={(e) => setPetName(e.target.value)} placeholder="例：そら" className={inputClass} />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-600">🐾 ペットの種類 <span className="text-pink-400">*</span></label>
-            <input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder="例: フレンチブルドッグ" className={inputClass} />
+            <input type="text" value={breed} onChange={(e) => setBreed(e.target.value)} placeholder="例：フレンチブルドッグ" className={inputClass} />
           </div>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-600">🎨 毛色 <span className="text-pink-400">*</span></label>
-            <input type="text" value={color} onChange={(e) => setColor(e.target.value)} placeholder="例: クリーム" className={inputClass} />
+            <input type="text" value={color} onChange={(e) => setColor(e.target.value)} placeholder="例：クリーム" className={inputClass} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-bold text-gray-600">🌀 模様・柄</label>
-            <input type="text" value={pattern} onChange={(e) => setPattern(e.target.value)} placeholder="例: 無地、パイド" className={inputClass} />
+            <label className="text-sm font-bold text-gray-600">🎭 模様・柄</label>
+            <input type="text" value={pattern} onChange={(e) => setPattern(e.target.value)} placeholder="例：無地、パイド" className={inputClass} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-bold text-gray-600">⭐ 特徴</label>
-            <input type="text" value={feature} onChange={(e) => setFeature(e.target.value)} placeholder="例: バットイヤー、短鼻" className={inputClass} />
+            <label className="text-sm font-bold text-gray-600">✨ 特徴</label>
+            <input type="text" value={feature} onChange={(e) => setFeature(e.target.value)} placeholder="例：バットイヤー、垂れ耳" className={inputClass} />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-600">🖌️ イラストスタイル</label>
+            <label className="text-sm font-bold text-gray-600">🖼️ イラストスタイル</label>
             <div className="grid grid-cols-2 gap-2">
               {STYLES.map(({ value, label, emoji }) => (
                 <button key={value} type="button" onClick={() => setStyle(value)}
@@ -230,20 +218,23 @@ export default function StampGenerator() {
             </div>
           </div>
 
+          {/* 固定フレーズ表示 */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-600">💬 スタンプの文言（編集可）</label>
+            <label className="text-sm font-bold text-gray-600">💬 スタンプのセリフ（16種類固定）</label>
             <div className="grid grid-cols-4 gap-1.5">
-              {phrases.map((phrase, i) => (
-                <input key={i} type="text" value={phrase} onChange={(e) => updatePhrase(i, e.target.value)}
-                  className="w-full px-1.5 py-2 text-[11px] text-center rounded-xl border-2 border-pink-200 bg-white focus:border-pink-400 focus:outline-none text-gray-700 transition-colors leading-tight" />
+              {FIXED_PHRASES.map((phrase, i) => (
+                <div key={i} className="w-full px-1.5 py-2 text-[11px] text-center rounded-xl border-2 border-pink-100 bg-pink-50 text-gray-600 leading-tight">
+                  {phrase}
+                </div>
               ))}
             </div>
+            <p className="text-xs text-gray-400 text-center">セリフとポーズはセットで最適化されています</p>
           </div>
 
           {/* お試し生成結果 */}
           {phase === 'trial_done' && trialDataURL && (
             <div className="flex flex-col items-center gap-2 bg-pink-50 rounded-2xl p-4 border-2 border-pink-200">
-              <p className="text-xs font-bold text-pink-500">🎨 お試し生成結果（透かし入り）</p>
+              <p className="text-xs font-bold text-pink-500">🎨 お試し生成結果（1枚だけ）</p>
               <img src={trialDataURL} alt="お試しスタンプ" className="w-40 h-40 rounded-2xl object-cover shadow-md" />
               <p className="text-xs text-gray-400 text-center">気に入ったら480円で16枚フルセットを作りましょう！</p>
             </div>
