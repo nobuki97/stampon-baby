@@ -98,6 +98,7 @@ export default function SuccessInner() {
               {masterDataURL === null ? "キャラクターを生成中..." : completedCount === 0 ? "キャラクター確定！スタンプを生成中..." : "スタンプ生成中... " + completedCount + " / " + STAMP_COUNT + "枚"}
             </p>
             <p className="text-sm text-gray-400 mt-1">1枚約30秒・16枚で約5〜6分かかります。このままお待ちください☕</p>
+            <p className="text-sm font-bold text-red-400 mt-2">⚠️ 生成中は画面をスリープにしないでください</p>
           </div>
         )}
         {phase === "done" && <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500">🎉 {STAMP_COUNT}枚完成！</p>}
@@ -114,4 +115,3 @@ export default function SuccessInner() {
     </div>
   )
 }
-
