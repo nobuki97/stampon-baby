@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 import { useEffect, useState, useRef } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { STAMP_COUNT } from "@/app/lib/constants"
@@ -36,7 +36,7 @@ export default function SuccessInner() {
       formData = data.formData
     } catch { setErrorMessage("ネットワークエラーが発生しました"); setPhase("error"); return }
 
-    const photo = sessionStorage.getItem("stampon_photo")
+    const photo = localStorage.getItem("stampon_photo")
     if (!photo) { setErrorMessage("写真データが見つかりません。最初からやり直してください。\nご購入済みの場合はships.llc@gmail.comまでご連絡ください。"); setPhase("error"); return }
 
     setPhase("generating")
@@ -65,7 +65,7 @@ export default function SuccessInner() {
           if (event.type === "master") { setMasterDataURL(event.dataUrl ?? null) }
           else if (event.type === "stamp" && event.index !== undefined) { urls[event.index] = event.dataUrl ?? ""; setStampDataURLs([...urls]); setCompletedCount(event.index + 1) }
           else if (event.type === "error") { throw new Error(event.message ?? "生成に失敗しました") }
-          else if (event.type === "done") { sessionStorage.removeItem("stampon_photo"); setPhase("done") }
+          else if (event.type === "done") { localStorage.removeItem("stampon_photo"); setPhase("done") }
         }
       }
     } catch (err) { setErrorMessage(err instanceof Error ? err.message : "生成に失敗しました"); setPhase("error") }
