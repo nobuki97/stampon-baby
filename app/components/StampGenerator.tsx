@@ -49,6 +49,63 @@ function isInAppBrowser(): boolean {
   return /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS/.test(navigator.userAgent)
 }
 
+function LineGuide() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="flex flex-col gap-2 bg-green-50 rounded-2xl p-4 border border-green-100">
+      <p className="text-sm font-black text-green-600">🐾 LINEスタンプへの登録方法</p>
+      <p className="text-xs text-gray-500">スマホだけで約5分！ZIPを一括アップロードするだけです。</p>
+      <button onClick={() => setOpen(v => !v)} className="w-full py-3 rounded-full border-2 border-green-300 text-green-600 font-bold text-sm hover:bg-green-100 transition-colors">
+        {open ? '登録ガイドを閉じる ▲' : '登録ガイドを見る ▼'}
+      </button>
+      {open && (
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">① STAMPONでスタンプが完成したら</p>
+            <p className="text-xs text-gray-500">「ZIPをダウンロードする」ボタンをタップ。16枚のスタンプ画像がZIPにまとめて入っています。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">② ZIPファイルを確認する</p>
+            <p className="text-xs text-gray-500">Androidは「ダウンロード」フォルダ、iPhoneは「ファイル」アプリの中に「stampon_line.zip」があることを確認。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">③ LINE Creators Marketにアクセス</p>
+            <p className="text-xs text-gray-500">スマホのChromeで <span className="font-bold text-green-700">creator.line.me</span> を開いてLINEアカウントでログイン。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">④ PC版を選択する</p>
+            <p className="text-xs text-gray-500">ダッシュボードの「PC版」をタップ。ZIP一括アップロードができる画面に切り替わります。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">⑤ 新規申請→必要事項を入力</p>
+            <p className="text-xs text-gray-500">「新規申請」をタップしてタイトルと説明文を入力。自分だけが使う場合は「非公開」を選択。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">⑥ ZIPを一括アップロード！</p>
+            <p className="text-xs text-gray-500">画像登録画面でZIPファイルを選択すると16枚が一気にアップロードされます。1枚ずつ選ぶ必要はありません。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">⑦ 申請完了→審査を待つ</p>
+            <p className="text-xs text-gray-500">「申請」ボタンをタップして送信。審査には通常2〜3日かかります。承認メールをお待ちください。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">⑧ 承認後リリースで使える！</p>
+            <p className="text-xs text-gray-500">承認メールが届いたらLINE Creators Marketで「リリース」をタップ。LINEのマイスタンプに追加されてトークで使えます🎉</p>
+          </div>
+          <div className="bg-yellow-50 rounded-xl p-3 border border-yellow-200">
+            <p className="font-black text-yellow-700 mb-1">💡 ポイント</p>
+            <ul className="flex flex-col gap-1 list-disc list-inside text-xs text-gray-500">
+              <li>非公開設定なら自分だけが使えます（販売なし）</li>
+              <li>有料販売したい場合は価格を設定して申請できます</li>
+              <li>ZIPにはmain.png・tab.pngも自動で含まれています</li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function StampGenerator() {
   const [phase, setPhase] = useState<Phase>('setup')
   const [photo, setPhoto] = useState<string | null>(null)
@@ -173,6 +230,10 @@ export default function StampGenerator() {
       {error && <div className="max-w-sm mx-auto mb-6 bg-red-50 border border-red-200 rounded-2xl px-4 py-3 text-sm text-red-600">⚠️ {error}</div>}
       {(phase === 'setup' || phase === 'trial_generating' || phase === 'trial_done') && (
         <div className="max-w-sm mx-auto flex flex-col gap-5">
+
+          {/* LINE登録ガイド（トップに表示） */}
+          <LineGuide />
+
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-600">📷 ペットの写真（必須）</label>
             <div className={`rounded-2xl border-2 border-dashed transition-colors cursor-pointer ${isDragging ? 'border-pink-400 bg-pink-50' : photo ? 'border-pink-300 bg-pink-50' : 'border-pink-200 bg-white hover:border-pink-300 hover:bg-pink-50'}`} onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}>
