@@ -44,9 +44,9 @@ function resizeImage(file: File, maxSize = 1024): Promise<string> {
   })
 }
 
-function isInstagramBrowser(): boolean {
+function isInAppBrowser(): boolean {
   if (typeof navigator === 'undefined') return false
-  return /Instagram/.test(navigator.userAgent)
+  return /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS/.test(navigator.userAgent)
 }
 
 export default function StampGenerator() {
@@ -63,10 +63,10 @@ export default function StampGenerator() {
   const [isRedirecting, setIsRedirecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [trialDataURL, setTrialDataURL] = useState<string | null>(null)
-  const [isInstagram, setIsInstagram] = useState(false)
+  const [isInApp, setIsInApp] = useState(false)
 
   useEffect(() => {
-    setIsInstagram(isInstagramBrowser())
+    setIsInApp(isInAppBrowser())
   }, [])
 
   const handleFile = async (file: File) => {
@@ -148,7 +148,7 @@ export default function StampGenerator() {
   const isValid = !!photo && breed.trim() !== '' && color.trim() !== ''
   const inputClass = 'w-full px-4 py-3 rounded-2xl border-2 border-pink-200 bg-white focus:border-pink-400 focus:outline-none text-gray-700 placeholder-gray-300 transition-colors'
 
-  if (isInstagram) return (
+  if (isInApp) return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 flex items-center justify-center px-6">
       <div className="max-w-sm w-full text-center">
         <p className="text-6xl mb-6">🌐</p>
@@ -159,7 +159,7 @@ export default function StampGenerator() {
           <p className="text-sm text-yellow-700 mb-2">② <span className="font-black">「Chromeで開く」</span> をタップ</p>
           <p className="text-sm text-yellow-700">③ そのまま操作を続けてください</p>
         </div>
-        <p className="text-xs text-gray-400">InstagramブラウザではダウンロードができないためChromeが必要です</p>
+        <p className="text-xs text-gray-400">InstagramおよびFacebookブラウザではダウンロードができないためChromeが必要です</p>
       </div>
     </div>
   )
