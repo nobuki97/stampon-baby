@@ -106,8 +106,9 @@ export default function DownloadSection({ stampDataURLs }: Props) {
         </div>
       )}
 
+      {/* スタンプ画像を保存する */}
       <div className="flex flex-col gap-3 bg-pink-50 rounded-2xl p-4 border border-pink-100">
-        <p className="text-sm font-black text-pink-600">スタンプ画像を保存する</p>
+        <p className="text-sm font-black text-pink-600">📱 スタンプ画像を保存する</p>
         <p className="text-xs text-gray-500 leading-relaxed">16枚をスマホに保存します。LINEやSNSのアイコンとしてお使いいただけます。</p>
         <button onClick={handleSaveAll} disabled={saving} className="w-full py-4 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
           {saving ? '保存中... ' + progress + ' / 16枚' : saved ? '保存完了！（もう一度保存）' : '16枚を保存する'}
@@ -119,67 +120,85 @@ export default function DownloadSection({ stampDataURLs }: Props) {
         )}
         {saved && (
           <div className="bg-white rounded-xl p-3 border border-pink-200">
-            <p className="text-xs font-black text-pink-600 mb-1">保存場所の確認方法</p>
-            <p className="text-xs text-gray-500 leading-relaxed">Androidの場合：「ファイル」アプリ→「ダウンロード」フォルダ</p>
+            <p className="text-xs font-black text-pink-600 mb-1">📂 保存場所の確認方法</p>
+            <p className="text-xs text-gray-500 leading-relaxed">Androidの場合：「ファイル」アプリ →「ダウンロード」フォルダ</p>
             <p className="text-xs text-gray-500 leading-relaxed">iPhoneの場合：「写真」アプリで確認できます</p>
           </div>
         )}
       </div>
 
+      {/* LINEスタンプとして登録する */}
       <div className="flex flex-col gap-3 bg-green-50 rounded-2xl p-4 border border-green-100">
-        <p className="text-sm font-black text-green-600">LINEスタンプとして使う</p>
-        <p className="text-xs text-gray-500 leading-relaxed">ZIPファイルをダウンロードして、LINEスタンプに登録します。</p>
-        <div className="flex flex-col gap-2">
-          <div className="bg-white rounded-xl p-3 border border-green-200">
-            <p className="text-xs font-black text-green-700 mb-1">A. 個人用（販売なし）</p>
-            <p className="text-xs text-gray-500 leading-relaxed">審査通過後、LINEストアで購入して自分用として使えます。販売はできません。</p>
-          </div>
-          <div className="bg-white rounded-xl p-3 border border-green-200">
-            <p className="text-xs font-black text-green-700 mb-1">B. 販売用（審査2〜3日後に販売可）</p>
-            <p className="text-xs text-gray-500 leading-relaxed">審査通過後にLINE Creators Marketで有料販売もできます。</p>
-          </div>
-        </div>
+        <p className="text-sm font-black text-green-600">🐾 LINEスタンプとして登録する</p>
+        <p className="text-xs text-gray-500 leading-relaxed">ZIPファイルをダウンロードして、スマホだけでLINEスタンプに登録できます。約5分で完了します。</p>
         <button onClick={handleZip} disabled={zipping || inAppBrowser} className="w-full py-4 rounded-full bg-gradient-to-r from-green-400 to-teal-400 text-white font-bold text-lg shadow-md hover:shadow-lg hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed">
           {zipping ? '準備中...' : zipped ? 'ダウンロード完了！（再ダウンロード）' : 'ZIPをダウンロードする'}
         </button>
+
         <button onClick={() => setGuideOpen(v => !v)} className="w-full py-3 rounded-full border-2 border-green-300 text-green-600 font-bold text-sm hover:bg-green-100 transition-colors">
-          {guideOpen ? 'ガイドを閉じる ▲' : 'LINEスタンプ申請ガイドを見る ▼'}
+          {guideOpen ? 'ガイドを閉じる ▲' : 'LINEスタンプ登録ガイドを見る ▼'}
         </button>
+
         {guideOpen && (
           <div className="flex flex-col gap-4 bg-white rounded-2xl p-4 border border-green-200 text-xs text-gray-600 leading-relaxed">
-            <div>
-              <p className="font-black text-green-700 mb-2">A. 個人用（販売なし）の申請手順</p>
-              <ol className="flex flex-col gap-1 list-decimal list-inside">
-                <li>ZIPを解凍して16枚の画像を確認する</li>
-                <li>LINEスタンプメーカーアプリをインストール</li>
-                <li>アプリを開いてスタンプを作成をタップ</li>
-                <li>16枚の画像を1枚ずつ登録する</li>
-                <li>販売情報で価格設定・売上分配なしを選択</li>
-                <li>販売申請をタップして審査に提出</li>
-                <li>審査通過後（1〜3日）、LINEストアで購入して利用できる</li>
-              </ol>
+
+            <div className="flex flex-col gap-3">
+              <p className="font-black text-green-700 text-sm">📋 登録手順（スマホのみでOK・約5分）</p>
+
+              <div className="flex flex-col gap-2">
+
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                  <p className="font-black text-green-700 mb-1">① STAMPONでスタンプが完成したら</p>
+                  <p className="text-gray-500">上の「ZIPをダウンロードする」ボタンをタップしてZIPファイルを保存してください。このZIPファイルに16枚のスタンプ画像が入っています。</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                  <p className="font-black text-green-700 mb-1">② ZIPファイルを確認する</p>
+                  <p className="text-gray-500">Androidの場合は「ダウンロード」フォルダ、iPhoneの場合は「ファイル」アプリの中に「stampon_line.zip」があることを確認してください。</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                  <p className="font-black text-green-700 mb-1">③ LINE Creators Marketにアクセス</p>
+                  <p className="text-gray-500">スマホのブラウザ（Chrome）で <span className="font-bold text-green-700">creator.line.me</span> を開き、LINEアカウントでログインしてください。</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                  <p className="font-black text-green-700 mb-1">④ PC版を選択する</p>
+                  <p className="text-gray-500">ダッシュボード画面の中に「PC版」という選択肢があります。これをタップするとPC版の画面に切り替わり、ZIP一括アップロードができるようになります。</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                  <p className="font-black text-green-700 mb-1">⑤ 新規申請→必要事項を入力</p>
+                  <p className="text-gray-500">「新規申請」をタップしてスタンプのタイトル（例：テンのスタンプ）と説明文を入力してください。自分だけが使う場合は「非公開」を選択するとLINEストアに表示されません。</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                  <p className="font-black text-green-700 mb-1">⑥ ZIPを一括アップロード！</p>
+                  <p className="text-gray-500">画像登録画面でZIPファイルを選択すると16枚が一気にアップロードされます。1枚ずつ選ぶ必要はありません。</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                  <p className="font-black text-green-700 mb-1">⑦ 申請完了→審査を待つ</p>
+                  <p className="text-gray-500">「申請」ボタンをタップして送信します。審査には通常2〜3日かかります。承認メールが届いたら次のステップへ進んでください。</p>
+                </div>
+
+                <div className="bg-green-50 rounded-xl p-3 border border-green-100">
+                  <p className="font-black text-green-700 mb-1">⑧ 承認後リリースで使える！</p>
+                  <p className="text-gray-500">承認メールが届いたらLINE Creators Marketで「リリース」ボタンをタップしてください。LINEアプリのマイスタンプに追加されて、トークで使えるようになります🎉</p>
+                </div>
+
+              </div>
             </div>
-            <div>
-              <p className="font-black text-green-700 mb-2">B. 販売用の申請手順</p>
-              <ol className="flex flex-col gap-1 list-decimal list-inside">
-                <li>ZIPを解凍して16枚の画像を確認する</li>
-                <li>LINEスタンプメーカーアプリをインストール</li>
-                <li>アプリを開いてスタンプを作成をタップ</li>
-                <li>16枚の画像を1枚ずつ登録する</li>
-                <li>販売情報で有料ダウンロード・売上分配ありを選択</li>
-                <li>価格（120円〜）を設定する</li>
-                <li>販売申請をタップして審査に提出</li>
-                <li>審査通過後（2〜3日）、LINE Creators Marketで販売開始</li>
-              </ol>
-            </div>
+
             <div className="bg-yellow-50 rounded-xl p-3 border border-yellow-200">
-              <p className="font-black text-yellow-700 mb-1">注意事項</p>
+              <p className="font-black text-yellow-700 mb-1">💡 ポイント</p>
               <ul className="flex flex-col gap-1 list-disc list-inside">
-                <li>01.png〜16.pngをそのまま使用してください</li>
-                <li>main.pngはメイン画像として登録してください</li>
-                <li>tab.pngはタブ画像として登録してください</li>
+                <li>非公開設定なら自分だけが使えます（販売なし）</li>
+                <li>有料販売したい場合は価格を設定して申請できます</li>
+                <li>ZIPにはmain.png・tab.pngも自動で含まれています</li>
               </ul>
             </div>
+
           </div>
         )}
       </div>
