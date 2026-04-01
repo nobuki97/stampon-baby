@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     }
     const origin = req.headers.get('origin') ?? 'https://stampon-two.vercel.app'
     const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['google_pay', 'apple_pay', 'card'],
       line_items: [{
         price_data: {
           currency: 'jpy',
