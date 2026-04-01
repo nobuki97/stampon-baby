@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { STAMP_TEXTS } from '@/app/lib/constants'
 
 type StyleType = 'ghibli' | 'watercolor' | 'chibi' | 'pastel'
@@ -44,6 +44,11 @@ function resizeImage(file: File, maxSize = 1024): Promise<string> {
   })
 }
 
+function isInstagramBrowser(): boolean {
+  if (typeof navigator === 'undefined') return false
+  return /Instagram/.test(navigator.userAgent)
+}
+
 export default function StampGenerator() {
   const [phase, setPhase] = useState<Phase>('setup')
   const [photo, setPhoto] = useState<string | null>(null)
@@ -58,6 +63,11 @@ export default function StampGenerator() {
   const [isRedirecting, setIsRedirecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [trialDataURL, setTrialDataURL] = useState<string | null>(null)
+  const [isInstagram, setIsInstagram] = useState(false)
+
+  useEffect(() => {
+    setIsInstagram(isInstagramBrowser())
+  }, [])
 
   const handleFile = async (file: File) => {
     try {
@@ -137,6 +147,22 @@ export default function StampGenerator() {
 
   const isValid = !!photo && breed.trim() !== '' && color.trim() !== ''
   const inputClass = 'w-full px-4 py-3 rounded-2xl border-2 border-pink-200 bg-white focus:border-pink-400 focus:outline-none text-gray-700 placeholder-gray-300 transition-colors'
+
+  if (isInstagram) return (
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 flex items-center justify-center px-6">
+      <div className="max-w-sm w-full text-center">
+        <p className="text-6xl mb-6">🌐</p>
+        <h2 className="text-2xl font-black text-gray-700 mb-4">Chromeで開いてください</h2>
+        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-2xl px-5 py-5 text-left mb-6">
+          <p className="text-sm font-bold text-yellow-800 mb-3">📱 開き方（3ステップ）</p>
+          <p className="text-sm text-yellow-700 mb-2">① 右上の <span className="font-black">「⋮」</span> をタップ</p>
+          <p className="text-sm text-yellow-700 mb-2">② <span className="font-black">「Chromeで開く」</span> をタップ</p>
+          <p className="text-sm text-yellow-700">③ そのまま操作を続けてください</p>
+        </div>
+        <p className="text-xs text-gray-400">InstagramブラウザではダウンロードができないためChromeが必要です</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 py-8 px-4">
