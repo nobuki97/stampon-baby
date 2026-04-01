@@ -4,9 +4,9 @@ export default function GuidePage() {
       <h1 className="text-2xl font-bold mb-6 text-center">LINEスタンプ登録ガイド</h1>
 
       <section className="mb-8 bg-green-50 rounded-2xl p-5 border border-green-100">
-        <h2 className="text-lg font-bold mb-3 text-green-700">A. 自分用に無料で使う（非公開）</h2>
+        <h2 className="text-lg font-bold mb-3 text-green-700">A. 自分用に使う（非公開・購入が必要）</h2>
         <p className="text-sm text-gray-600 leading-relaxed mb-4">
-          スマホの「LINE Creators Studio」アプリを使います。審査後、自分で無料ダウンロードして使えます。ショップには公開されません。
+          スマホの「LINE Creators Studio」アプリを使います。審査後、LINEストアで購入して使えます。ショップには公開されません。
         </p>
         <ol className="text-sm text-gray-700 leading-relaxed space-y-3">
           <li className="flex gap-3">
@@ -31,7 +31,7 @@ export default function GuidePage() {
           </li>
           <li className="flex gap-3">
             <span className="w-6 h-6 rounded-full bg-green-400 text-white font-bold text-xs flex items-center justify-center shrink-0">6</span>
-            <span>審査通過後、自分のLINEに無料でダウンロードして使える</span>
+            <span>審査通過後、LINEストアで購入して使える</span>
           </li>
         </ol>
         <div className="mt-4 bg-white rounded-xl p-3 border border-green-200 text-xs text-gray-500">
