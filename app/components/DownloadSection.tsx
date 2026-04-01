@@ -131,8 +131,8 @@ export default function DownloadSection({ stampDataURLs }: Props) {
         <p className="text-xs text-gray-500 leading-relaxed">ZIPファイルをダウンロードして、LINEスタンプに登録します。</p>
         <div className="flex flex-col gap-2">
           <div className="bg-white rounded-xl p-3 border border-green-200">
-            <p className="text-xs font-black text-green-700 mb-1">A. 個人用（すぐ使える・無料）</p>
-            <p className="text-xs text-gray-500 leading-relaxed">登録後すぐ自分用として無料で使えます。販売はできません。</p>
+            <p className="text-xs font-black text-green-700 mb-1">A. 個人用（販売なし）</p>
+            <p className="text-xs text-gray-500 leading-relaxed">審査通過後、LINEストアで購入して自分用として使えます。販売はできません。</p>
           </div>
           <div className="bg-white rounded-xl p-3 border border-green-200">
             <p className="text-xs font-black text-green-700 mb-1">B. 販売用（審査2〜3日後に販売可）</p>
@@ -148,15 +148,15 @@ export default function DownloadSection({ stampDataURLs }: Props) {
         {guideOpen && (
           <div className="flex flex-col gap-4 bg-white rounded-2xl p-4 border border-green-200 text-xs text-gray-600 leading-relaxed">
             <div>
-              <p className="font-black text-green-700 mb-2">A. 個人用（無料）の申請手順</p>
+              <p className="font-black text-green-700 mb-2">A. 個人用（販売なし）の申請手順</p>
               <ol className="flex flex-col gap-1 list-decimal list-inside">
                 <li>ZIPを解凍して16枚の画像を確認する</li>
                 <li>LINEスタンプメーカーアプリをインストール</li>
                 <li>アプリを開いてスタンプを作成をタップ</li>
                 <li>16枚の画像を1枚ずつ登録する</li>
-                <li>販売情報で無料ダウンロード・売上分配なしを選択</li>
+                <li>販売情報で価格設定・売上分配なしを選択</li>
                 <li>販売申請をタップして審査に提出</li>
-                <li>審査通過後（1〜3日）、自分のLINEで無料利用できる</li>
+                <li>審査通過後（1〜3日）、LINEストアで購入して利用できる</li>
               </ol>
             </div>
             <div>
