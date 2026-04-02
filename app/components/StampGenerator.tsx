@@ -49,6 +49,25 @@ function isInAppBrowser(): boolean {
   return /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS/.test(navigator.userAgent)
 }
 
+function YoutubeSection() {
+  return (
+    <div className="flex flex-col gap-2 bg-red-50 rounded-2xl p-4 border border-red-100">
+      <p className="text-sm font-black text-red-600">🎬 LINEスタンプ登録の流れを動画で見る</p>
+      <p className="text-xs text-gray-500">スマホだけで注文からLINE登録まで全部できます。</p>
+      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+        <iframe
+          className="absolute top-0 left-0 w-full h-full rounded-xl"
+          src="https://www.youtube.com/embed/BHjfoq430fM"
+          title="LINEスタンプ登録ガイド"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    </div>
+  )
+}
+
 function LineGuide() {
   const [open, setOpen] = useState(false)
   return (
@@ -234,7 +253,10 @@ export default function StampGenerator() {
       {(phase === 'setup' || phase === 'trial_generating' || phase === 'trial_done') && (
         <div className="max-w-sm mx-auto flex flex-col gap-5">
 
-          {/* LINE登録ガイド（トップに表示） */}
+          {/* YouTube動画 */}
+          <YoutubeSection />
+
+          {/* LINE登録ガイド */}
           <LineGuide />
 
           <div className="flex flex-col gap-1.5">
