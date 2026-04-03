@@ -250,9 +250,6 @@ export default function StampGenerator() {
       {(phase === 'setup' || phase === 'trial_generating' || phase === 'trial_done') && (
         <div className="max-w-sm mx-auto flex flex-col gap-5">
 
-          {/* LINE登録ガイド */}
-          <LineGuide />
-
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-600">📷 ペットの写真（必須）</label>
             <div className={`rounded-2xl border-2 border-dashed transition-colors cursor-pointer ${isDragging ? 'border-pink-400 bg-pink-50' : photo ? 'border-pink-300 bg-pink-50' : 'border-pink-200 bg-white hover:border-pink-300 hover:bg-pink-50'}`} onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}>
@@ -326,6 +323,9 @@ export default function StampGenerator() {
             {isRedirecting ? '⏳ 決済ページへ移動中...' : '💳 480円で16枚作る！'}
           </button>
           <p className="text-center text-xs text-gray-400">🔒 決済はStripeで安全に処理されます</p>
+
+          {/* LINE登録ガイド */}
+          <LineGuide />
 
           {/* YouTube動画 */}
           <YoutubeSection />
