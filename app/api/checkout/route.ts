@@ -1,9 +1,10 @@
 ﻿import { NextRequest } from 'next/server'
 import Stripe from 'stripe'
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2026-03-25.dahlia',
-})
+
 export async function POST(req: NextRequest) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2026-03-25.dahlia',
+  })
   try {
     const body = await req.json()
     const { formData } = body as { formData: Record<string, unknown> }
@@ -28,8 +29,8 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       }],
       mode: 'payment',
-      success_url: \/success?session_id={CHECKOUT_SESSION_ID}&openExternalBrowser=1,
-      cancel_url: \/,
+      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}&openExternalBrowser=1`,
+      cancel_url: `${origin}/`,
       metadata,
       locale: 'ja',
     })

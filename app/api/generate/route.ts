@@ -40,20 +40,30 @@ async function generateMaster(apiKey: string, photoBase64: string, breed: string
   return data.data[0].b64_json
 }
 
-async function generateStamp(apiKey: string, breed: string, color: string, pattern: string, feature: string, petName: string, style: string, phrase: string, index: number): Promise<string> {
+async function generateStamp(apiKey: string, breed: string, color: string, pattern: string, feature: string, petName: string, style: string, phrase: string, index: number, masterB64?: string): Promise<string> {
   const pose = POSES[index]
   const characterDesc = buildCharacterDesc(breed, color, pattern, feature, petName)
   const stylePrompt = STYLE_PROMPTS[style] ?? STYLE_PROMPTS.ghibli
   const nameTagPrompt = petName ? `The character has a small wooden name tag hanging from its neck with the name "${petName}" written on it in handwritten style. ` : ""
+  const prompt = `LINE sticker of a cute ${characterDesc}. Pose: ${pose}. ${nameTagPrompt}Japanese text "${phrase}" at the bottom in bold rounded white letters with dark outline. Style: ${stylePrompt}, large expressive eyes, white background, square format, cute decorative border.`
+  if (masterB64) {
+    const buffer = Buffer.from(masterB64, "base64")
+    const blob = new Blob([buffer], { type: "image/png" })
+    const fd = new FormData()
+    fd.append("model", "gpt-image-1")
+    fd.append("image[]", blob, "master.png")
+    fd.append("prompt", prompt)
+    fd.append("n", "1")
+    fd.append("size", "1024x1024")
+    const res = await fetch(`${OPENAI_BASE}/images/edits`, { method: "POST", headers: { Authorization: `Bearer ${apiKey}` }, body: fd })
+    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error((err as { error?: { message?: string } }).error?.message ?? `スタンプ ${index + 1} の生成に失敗しました`) }
+    const data = await res.json() as { data: { b64_json: string }[] }
+    return data.data[0].b64_json
+  }
   const res = await fetch(`${OPENAI_BASE}/images/generations`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model: "gpt-image-1",
-      prompt: `LINE sticker of a cute ${characterDesc}. Pose: ${pose}. ${nameTagPrompt}Japanese text "${phrase}" at the bottom in bold rounded white letters with dark outline. Style: ${stylePrompt}, large expressive eyes, white background, square format, cute decorative border.`,
-      n: 1,
-      size: "1024x1024"
-    }),
+    body: JSON.stringify({ model: "gpt-image-1", prompt, n: 1, size: "1024x1024" }),
   })
   if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error((err as { error?: { message?: string } }).error?.message ?? `スタンプ ${index + 1} の生成に失敗しました`) }
   const data = await res.json() as { data: { b64_json: string }[] }
@@ -90,7 +100,9 @@ export async function POST(req: NextRequest) {
       const send = (data: object) => { controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`)) }
       try {
         if (trial) {
-          const b64 = await generateStamp(apiKey, breed, color, pattern, feature, petName, style, phrases[0] ?? "お試し", 0)
+          const masterB64 = await generateMaster(apiKey, photo, breed, color, pattern, feature, petName, style)
+          send({ type: "master", dataUrl: `data:image/png;base64,${masterB64}` })
+          const b64 = await generateStamp(apiKey, breed, color, pattern, feature, petName, style, phrases[0] ?? "お試し", 0, masterB64)
           send({ type: "stamp", index: 0, dataUrl: `data:image/png;base64,${b64}`, trial: true })
           send({ type: "done" })
         } else {
