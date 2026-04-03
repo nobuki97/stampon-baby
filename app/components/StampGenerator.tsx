@@ -49,7 +49,7 @@ function resizeImage(file: File, maxSize = 1024): Promise<string> {
 
 function isInAppBrowser(): boolean {
   if (typeof navigator === 'undefined') return false
-  return /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS/.test(navigator.userAgent)
+  return /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS|Line\/\d/.test(navigator.userAgent)
 }
 
 function YoutubeSection() {
