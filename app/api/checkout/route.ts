@@ -1,4 +1,4 @@
-﻿import { NextRequest } from 'next/server'
+import { NextRequest } from 'next/server'
 import Stripe from 'stripe'
 
 export async function POST(req: NextRequest) {
@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
     }
     const origin = req.headers.get('origin') ?? 'https://stampon-two.vercel.app'
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       line_items: [{
         price_data: {
           currency: 'jpy',

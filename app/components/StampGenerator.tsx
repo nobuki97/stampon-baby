@@ -252,6 +252,13 @@ export default function StampGenerator() {
       {error && <div className="max-w-sm mx-auto mb-6 bg-red-50 border border-red-200 rounded-2xl px-4 py-3 text-sm text-red-600">⚠️ {error}</div>}
       {(phase === 'setup' || phase === 'trial_generating' || phase === 'trial_done') && (
         <div className="max-w-sm mx-auto flex flex-col gap-5">
+
+          {/* YouTube動画 */}
+          <YoutubeSection />
+
+          {/* LINE登録ガイド */}
+          <LineGuide />
+
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-bold text-gray-600">📷 ペットの写真（必須）</label>
             <div className={`rounded-2xl border-2 border-dashed transition-colors cursor-pointer ${isDragging ? 'border-pink-400 bg-pink-50' : photo ? 'border-pink-300 bg-pink-50' : 'border-pink-200 bg-white hover:border-pink-300 hover:bg-pink-50'}`} onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop} onClick={() => fileInputRef.current?.click()}>
