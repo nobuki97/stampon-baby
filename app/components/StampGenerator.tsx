@@ -89,7 +89,7 @@ function LineGuide() {
           </div>
           <div className="bg-white rounded-xl p-3 border border-green-100">
             <p className="font-black text-green-700 mb-1">③ LINE Creators Marketにアクセス</p>
-            <p className="text-xs text-gray-500">スマホのChromeで <span className="font-bold text-green-700">creator.line.me</span> を開いてLINEアカウントでログイン。</p>
+            <p className="text-xs text-gray-500">スマホのChromeで <a href="https://creator.line.me" target="_blank" rel="noopener noreferrer" className="font-bold text-green-700 underline">creator.line.me</a> を開いてLINEアカウントでログイン。</p>
           </div>
           <div className="bg-white rounded-xl p-3 border border-green-100">
             <p className="font-black text-green-700 mb-1">④ PC版を選択する</p>
