@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { STAMP_TEXTS } from '@/app/lib/constants'
 
 type StyleType = 'ghibli' | 'watercolor' | 'chibi' | 'pastel'
@@ -44,6 +44,90 @@ function resizeImage(file: File, maxSize = 1024): Promise<string> {
   })
 }
 
+function isInAppBrowser(): boolean {
+  if (typeof navigator === 'undefined') return false
+  return /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBIOS/.test(navigator.userAgent)
+}
+
+function YoutubeSection() {
+  return (
+    <div className="flex flex-col gap-2 bg-red-50 rounded-2xl p-4 border border-red-100">
+      <p className="text-sm font-black text-red-600">🎬 LINEスタンプ登録の流れを動画で見る</p>
+      <p className="text-xs text-gray-500">スマホだけで注文からLINE登録まで全部できます。</p>
+      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+        <iframe
+          className="absolute top-0 left-0 w-full h-full rounded-xl"
+          src="https://www.youtube.com/embed/BHjfoq430fM"
+          title="LINEスタンプ登録ガイド"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    </div>
+  )
+}
+
+function LineGuide() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="flex flex-col gap-2 bg-green-50 rounded-2xl p-4 border border-green-100">
+      <p className="text-sm font-black text-green-600">🐾 LINEスタンプへの登録方法</p>
+      <p className="text-xs text-gray-500">スマホだけで約5分！ZIPを一括アップロードするだけです。</p>
+      <button onClick={() => setOpen(v => !v)} className="w-full py-3 rounded-full border-2 border-green-300 text-green-600 font-bold text-sm hover:bg-green-100 transition-colors">
+        {open ? '登録ガイドを閉じる ▲' : '登録ガイドを見る ▼'}
+      </button>
+      {open && (
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">① STAMPONでスタンプが完成したら</p>
+            <p className="text-xs text-gray-500">「ZIPをダウンロードする」ボタンをタップ。16枚のスタンプ画像がZIPにまとめて入っています。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">② ZIPファイルを確認する</p>
+            <p className="text-xs text-gray-500">Androidは「ダウンロード」フォルダ、iPhoneは「ファイル」アプリの中に「stampon_line.zip」があることを確認。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">③ LINE Creators Marketにアクセス</p>
+            <p className="text-xs text-gray-500 mb-2">スマホのChromeで下のボタンからアクセスしてLINEアカウントでログインしてください。</p>
+            <a href="https://creator.line.me" target="_blank" rel="noopener noreferrer" className="block w-full py-2 rounded-full bg-green-400 text-white font-bold text-xs text-center shadow-sm hover:opacity-90 transition-opacity">
+              LINE Creators Marketを開く →
+            </a>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">④ PC版を選択する</p>
+            <p className="text-xs text-gray-500">ダッシュボードの「PC版」をタップ。ZIP一括アップロードができる画面に切り替わります。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">⑤ 新規申請→必要事項を入力</p>
+            <p className="text-xs text-gray-500">「新規申請」をタップしてタイトルと説明文を入力。自分だけが使う場合は「非公開」を選択。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">⑥ ZIPを一括アップロード！</p>
+            <p className="text-xs text-gray-500">画像登録画面でZIPファイルを選択すると16枚が一気にアップロードされます。1枚ずつ選ぶ必要はありません。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">⑦ 申請完了→審査を待つ</p>
+            <p className="text-xs text-gray-500">「申請」ボタンをタップして送信。審査には通常2〜3日かかります。承認メールをお待ちください。</p>
+          </div>
+          <div className="bg-white rounded-xl p-3 border border-green-100">
+            <p className="font-black text-green-700 mb-1">⑧ 承認後リリースで使える！</p>
+            <p className="text-xs text-gray-500">承認メールが届いたらLINE Creators Marketで「リリース」をタップ。LINEのマイスタンプに追加されてトークで使えます🎉</p>
+          </div>
+          <div className="bg-yellow-50 rounded-xl p-3 border border-yellow-200">
+            <p className="font-black text-yellow-700 mb-1">💡 ポイント</p>
+            <ul className="flex flex-col gap-1 list-disc list-inside text-xs text-gray-500">
+              <li>非公開設定なら自分だけが使えます（販売なし）</li>
+              <li>有料販売したい場合は価格を設定して申請できます</li>
+              <li>ZIPにはmain.png・tab.pngも自動で含まれています</li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function StampGenerator() {
   const [phase, setPhase] = useState<Phase>('setup')
   const [photo, setPhoto] = useState<string | null>(null)
@@ -58,7 +142,11 @@ export default function StampGenerator() {
   const [isRedirecting, setIsRedirecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [trialDataURL, setTrialDataURL] = useState<string | null>(null)
-  const [showGuide, setShowGuide] = useState(false)
+  const [isInApp, setIsInApp] = useState(false)
+
+  useEffect(() => {
+    setIsInApp(isInAppBrowser())
+  }, [])
 
   const handleFile = async (file: File) => {
     try {
@@ -121,7 +209,7 @@ export default function StampGenerator() {
     setIsRedirecting(true)
     setError(null)
     try {
-      sessionStorage.setItem('stampon_photo', photo)
+      localStorage.setItem('stampon_photo', photo)
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -138,6 +226,22 @@ export default function StampGenerator() {
 
   const isValid = !!photo && breed.trim() !== '' && color.trim() !== ''
   const inputClass = 'w-full px-4 py-3 rounded-2xl border-2 border-pink-200 bg-white focus:border-pink-400 focus:outline-none text-gray-700 placeholder-gray-300 transition-colors'
+
+  if (isInApp) return (
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 flex items-center justify-center px-6">
+      <div className="max-w-sm w-full text-center">
+        <p className="text-6xl mb-6">🌐</p>
+        <h2 className="text-2xl font-black text-gray-700 mb-4">Chromeで開いてください</h2>
+        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-2xl px-5 py-5 text-left mb-6">
+          <p className="text-sm font-bold text-yellow-800 mb-3">📱 開き方（3ステップ）</p>
+          <p className="text-sm text-yellow-700 mb-2">① 右上の <span className="font-black">「⋮」</span> をタップ</p>
+          <p className="text-sm text-yellow-700 mb-2">② <span className="font-black">「Chromeで開く」</span> をタップ</p>
+          <p className="text-sm text-yellow-700">③ そのまま操作を続けてください</p>
+        </div>
+        <p className="text-xs text-gray-400">InstagramおよびFacebookブラウザではダウンロードができないためChromeが必要です</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 py-8 px-4">
@@ -222,94 +326,11 @@ export default function StampGenerator() {
           </button>
           <p className="text-center text-xs text-gray-400">🔒 決済はStripeで安全に処理されます</p>
 
-          {/* YouTube動画セクション */}
-          <div className="flex flex-col gap-2">
-            <p className="text-sm font-bold text-gray-600">🎬 LINEスタンプ登録の流れを動画で見る</p>
-            <div className="relative w-full rounded-2xl overflow-hidden border-2 border-pink-100" style={{ paddingTop: '56.25%' }}>
-              <iframe
-                className="absolute inset-0 w-full h-full"
-                src="https://www.youtube.com/embed/BHjfoq430fM"
-                title="LINEスタンプ登録の流れ"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          </div>
+          {/* YouTube動画 */}
+          <YoutubeSection />
 
-          {/* ガイドアコーディオン */}
-          <div className="flex flex-col gap-0">
-            <button
-              type="button"
-              onClick={() => setShowGuide(prev => !prev)}
-              className="w-full flex items-center justify-between px-4 py-3 rounded-2xl border-2 border-pink-200 bg-white text-sm font-bold text-gray-600 hover:bg-pink-50 transition-colors"
-            >
-              <span>🐾 LINEスタンプへの登録方法</span>
-              <span className="text-pink-400 text-xs">{showGuide ? '閉じる▲' : '登録ガイドを見る▼'}</span>
-            </button>
-            {showGuide && (
-              <div className="flex flex-col gap-4 mt-2 px-1">
-                <div className="bg-green-50 rounded-2xl p-4 border border-green-100">
-                  <h3 className="text-sm font-bold text-green-700 mb-2">A. 自分用に無料で使う（非公開）</h3>
-                  <p className="text-xs text-gray-500 mb-3">スマホの「LINE Creators Studio」アプリを使います。審査後、自分で無料ダウンロードして使えます。ショップには公開されません。</p>
-                  <ol className="flex flex-col gap-2">
-                    {[
-                      'スマホに「LINE Creators Studio」アプリをダウンロードする',
-                      'LINEアカウントでログインし、「スタンプを作る」を選択',
-                      'STAMPONでダウンロードした16枚の画像をアップロード',
-                      'タイトル・説明文を入力し、プライベート設定で「非公開」を選択',
-                      '「審査リクエスト」を送信（数日で審査完了）',
-                      '審査通過後、自分のLINEに無料でダウンロードして使える',
-                    ].map((step, i) => (
-                      <li key={i} className="flex gap-2 text-xs text-gray-700">
-                        <span className="w-5 h-5 rounded-full bg-green-400 text-white font-bold text-[10px] flex items-center justify-center shrink-0">{i + 1}</span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                  <p className="mt-3 text-[11px] text-gray-400 bg-white rounded-xl px-3 py-2 border border-green-200">注意：非公開設定でも、トークでスタンプを送った相手がタップすると購入できてしまいます。</p>
-                </div>
-                <div className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
-                  <h3 className="text-sm font-bold text-blue-700 mb-2">B. 有料販売する（公開）</h3>
-                  <p className="text-xs text-gray-500 mb-3">LINEクリエイターズマーケット（Web版）から申請します。審査通過後、LINEスタンプショップで販売できます。</p>
-                  <ol className="flex flex-col gap-2">
-                    <li className="flex gap-2 text-xs text-gray-700">
-                      <span className="w-5 h-5 rounded-full bg-blue-400 text-white font-bold text-[10px] flex items-center justify-center shrink-0">1</span>
-                      <span><a href="https://creator.line.me" target="_blank" className="text-blue-500 underline">creator.line.me</a> にアクセスしてLINEアカウントでログイン・クリエイター登録</span>
-                    </li>
-                    {[
-                      '「スタンプ」→「新規登録」→タイトル・説明文を入力',
-                      'STAMPONでダウンロードしたZIPファイルをアップロード',
-                      'プライベート設定で「公開」を選択し、販売価格を設定',
-                      '「審査リクエスト」を送信（数日で審査完了）',
-                      '審査通過後、LINEスタンプショップで販売開始',
-                    ].map((step, i) => (
-                      <li key={i} className="flex gap-2 text-xs text-gray-700">
-                        <span className="w-5 h-5 rounded-full bg-blue-400 text-white font-bold text-[10px] flex items-center justify-center shrink-0">{i + 2}</span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-                <div className="bg-pink-50 rounded-2xl p-4 border border-pink-100">
-                  <h3 className="text-sm font-bold text-pink-600 mb-2">C. LINEに登録せず画像として使う（一番かんたん）</h3>
-                  <p className="text-xs text-gray-500 mb-3">審査なし・登録なし・無料。スマホのギャラリーに保存してLINEのトークで画像として送るだけです。</p>
-                  <ol className="flex flex-col gap-2">
-                    {[
-                      'STAMPONの「16枚を画像フォルダに保存する」ボタンを押す',
-                      'スマホのギャラリーに「スタンプ」などのフォルダを作って保管',
-                      'LINEのトークで画像添付ボタンをタップ',
-                      'スタンプフォルダから使いたい画像を選んで送信',
-                    ].map((step, i) => (
-                      <li key={i} className="flex gap-2 text-xs text-gray-700">
-                        <span className="w-5 h-5 rounded-full bg-pink-400 text-white font-bold text-[10px] flex items-center justify-center shrink-0">{i + 1}</span>
-                        <span>{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* LINE登録ガイド */}
+          <LineGuide />
         </div>
       )}
     </div>
