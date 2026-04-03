@@ -1,6 +1,7 @@
 {
-  "name": "pet-stamp-app",
-  "version": "0.1.0",
+  "name": "stampon-for-baby",
+  "version": "1.0.0",
+  "description": "STAMPON for Baby - AI-powered baby LINE sticker maker",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -10,20 +11,22 @@
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.0.0",
+    "autoprefixer": "^10.4.27",
     "jszip": "^3.10.1",
     "next": "16.2.1",
+    "postcss": "^8.5.8",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "stripe": "^21.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.2.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.2.2",
     "typescript": "^5"
   }
 }
