@@ -11,18 +11,8 @@ const mPlusRounded = M_PLUS_Rounded_1c({
 })
 
 export const metadata: Metadata = {
-  title: 'STAMPON for Baby - AIベビースタンプメーカー',
-  description: 'うちの子が世界に一つだけのLINEスタンプに！赤ちゃんの写真をアップするだけ。AIが16枚のオリジナルスタンプを自動生成。スマホで5分、480円。',
-  openGraph: {
-    title: 'STAMPON for Baby - うちの子が世界に一つだけのLINEスタンプに！',
-    description: '赤ちゃんの写真をアップするだけ。AIが16枚のLINEスタンプを自動生成。スマホで5分、480円。',
-    siteName: 'STAMPON for Baby',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'STAMPON for Baby',
-    description: 'うちの子が世界に一つだけのLINEスタンプに！',
-  },
+  title: 'STAMPON - AIペットスタンプメーカー',
+  description: '愛するペットの写真から、オリジナルLINEスタンプを簡単作成！',
 }
 
 export default function RootLayout({

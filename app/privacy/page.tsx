@@ -3,17 +3,17 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-black text-gray-700 mb-2">プライバシーポリシー</h1>
-        <p className="text-xs text-gray-400 mb-8">最終更新日：2026年4月3日</p>
+        <p className="text-xs text-gray-400 mb-8">最終更新日：2026年3月29日</p>
         <div className="flex flex-col gap-8 text-sm text-gray-700 leading-relaxed">
           <section>
             <h2 className="font-black text-gray-600 mb-2">1. 事業者情報</h2>
-            <p>SHIPS.LLC合同会社（以下「当社」）は、本サービス「STAMPON for Baby」におけるお客様の個人情報の取扱いについて、以下のとおりプライバシーポリシーを定めます。</p>
+            <p>SHIPS.LLC合同会社（以下「当社」）は、本サービス「STAMPON」におけるお客様の個人情報の取扱いについて、以下のとおりプライバシーポリシーを定めます。</p>
           </section>
           <section>
             <h2 className="font-black text-gray-600 mb-2">2. 収集する情報</h2>
             <ul className="list-disc pl-5 flex flex-col gap-1">
-              <li>アップロードされた赤ちゃんの写真画像</li>
-              <li>入力された赤ちゃんの情報（名前・性別・顔の特徴など）</li>
+              <li>アップロードされたペットの写真画像</li>
+              <li>入力されたペット情報（種類・毛色・名前など）</li>
               <li>Stripeを通じた決済情報（カード情報は当社では保持しません）</li>
               <li>アクセスログ（IPアドレス・ブラウザ情報など）</li>
             </ul>
@@ -36,7 +36,7 @@ export default function PrivacyPage() {
           </section>
           <section>
             <h2 className="font-black text-gray-600 mb-2">5. 画像データの取扱い</h2>
-            <p>アップロードされた赤ちゃんの写真はAIベビースタンプ生成のためにOpenAI APIに送信されます。生成完了後、当社のサーバーには画像データを保存しません。</p>
+            <p>アップロードされたペット写真はAI画像生成のためにOpenAI APIに送信されます。生成完了後、当社のサーバーには画像データを保存しません。</p>
           </section>
           <section>
             <h2 className="font-black text-gray-600 mb-2">6. Cookieの使用</h2>
