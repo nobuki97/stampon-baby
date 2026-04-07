@@ -11,8 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Pull Vercel Environment
+        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: team_Y4hn81HC3O9Qd5BGqxqHMJeS
+          VERCEL_PROJECT_ID: prj_U76X02CsVBD32tHrGg74rjY5rccp
+
+      - name: Build
+        run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: team_Y4hn81HC3O9Qd5BGqxqHMJeS
+          VERCEL_PROJECT_ID: prj_U76X02CsVBD32tHrGg74rjY5rccp
+
       - name: Deploy to Vercel (stampon-for-baby)
-        run: npx vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: team_Y4hn81HC3O9Qd5BGqxqHMJeS
           VERCEL_PROJECT_ID: prj_U76X02CsVBD32tHrGg74rjY5rccp
