@@ -1,0 +1,18 @@
+name: Deploy baby → stampon-for-baby
+
+on:
+  push:
+    branches:
+      - baby
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Vercel (stampon-for-baby)
+        run: npx vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: team_Y4hn81HC3O9Qd5BGqxqHMJeS
+          VERCEL_PROJECT_ID: prj_U76X02CsVBD32tHrGg74rjY5rccp
