@@ -7,7 +7,7 @@ import DownloadSection from "@/app/components/DownloadSection"
 
 type Phase = "verifying" | "generating" | "done" | "error"
 interface FormData {
-  babyName: string; gender: string; features: string[]; style: string; phrases: string[]
+  breed: string; color: string; pattern: string; feature: string; petName: string; style: string; phrases: string[]
 }
 
 export default function SuccessInner() {
@@ -140,11 +140,7 @@ export default function SuccessInner() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 py-8 px-4">
       <header className="text-center mb-8">
-        <h1 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-2">
-          <span>STAMP</span>
-          <span className="inline-flex items-center justify-center mx-0.5 w-8 h-8 rounded-full border-4 border-dashed border-red-400 bg-red-50 text-lg align-middle">👶</span>
-          <span>N for Baby</span>
-        </h1>
+        <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-2">🐾 STAMPON</h1>
         {phase === "generating" && (
           <div className="text-center">
             <p className="text-pink-500 font-bold text-lg animate-pulse">
