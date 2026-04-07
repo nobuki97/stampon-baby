@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server"
+import { put } from "@vercel/blob"
 import { POSES, EXPRESSIONS } from "@/app/lib/constants"
 
 const OPENAI_BASE = "https://api.openai.com/v1"
@@ -96,7 +97,7 @@ export async function POST(req: NextRequest) {
     return new Response(JSON.stringify({ error: "OpenAI API key が設定されていません。" }), { status: 500, headers: { "Content-Type": "application/json" } })
   }
 
-  let photo: string, babyName: string, gender: string, features: string[], style: string, phrases: string[], trial: boolean
+  let photo: string, babyName: string, gender: string, features: string[], style: string, phrases: string[], trial: boolean, sessionId: string, startIndex: number, masterBlobUrl: string
   try {
     const body = await req.json()
     photo = body.photo
@@ -106,10 +107,20 @@ export async function POST(req: NextRequest) {
     style = body.style ?? "chibi"
     phrases = Array.isArray(body.phrases) ? body.phrases : []
     trial = body.trial === true
-    if (!photo) throw new Error("missing required fields")
+    sessionId = body.sessionId ?? ""
+    startIndex = typeof body.startIndex === "number" ? body.startIndex : 0
+    masterBlobUrl = body.masterBlobUrl ?? ""
+    if (!photo && startIndex === 0) throw new Error("missing required fields")
     if (!trial && phrases.length !== 16) throw new Error("phrases must have 16 items")
   } catch {
     return new Response(JSON.stringify({ error: "リクエストが不正です" }), { status: 400, headers: { "Content-Type": "application/json" } })
+  }
+
+  const saveToBlob = async (pathname: string, b64: string) => {
+    if (!sessionId) return
+    try {
+      await put(pathname, Buffer.from(b64, "base64"), { access: "public", contentType: "image/png", allowOverwrite: true })
+    } catch { /* blob save failure does not break generation */ }
   }
 
   const encoder = new TextEncoder()
@@ -124,13 +135,27 @@ export async function POST(req: NextRequest) {
           send({ type: "stamp", index: 2, dataUrl: `data:image/png;base64,${b64}`, trial: true })
           send({ type: "done" })
         } else {
-          const masterB64 = await generateMaster(apiKey, photo, babyName, gender, features, style)
-          send({ type: "master", dataUrl: `data:image/png;base64,${masterB64}` })
+          let masterB64: string
+          if (startIndex > 0 && masterBlobUrl) {
+            // Resume: fetch existing master from blob storage
+            const res = await fetch(masterBlobUrl)
+            const buf = await res.arrayBuffer()
+            masterB64 = Buffer.from(buf).toString("base64")
+            send({ type: "master", dataUrl: masterBlobUrl })
+          } else {
+            masterB64 = await generateMaster(apiKey, photo, babyName, gender, features, style)
+            await saveToBlob(`stamps/${sessionId}/master.png`, masterB64)
+            send({ type: "master", dataUrl: `data:image/png;base64,${masterB64}` })
+          }
           const BATCH = 4
-          for (let i = 0; i < 16; i += BATCH) {
+          for (let i = startIndex; i < 16; i += BATCH) {
             const batch = Array.from({ length: Math.min(BATCH, 16 - i) }, (_, j) => i + j)
-            const results = await Promise.all(batch.map(idx => generateStamp(apiKey, babyName, gender, features, style, phrases[idx], idx)))
-            results.forEach((b64, j) => { send({ type: "stamp", index: i + j, dataUrl: `data:image/png;base64,${b64}` }) })
+            const results = await Promise.all(batch.map(idx => generateStamp(apiKey, babyName, gender, features, style, phrases[idx], idx, masterB64)))
+            for (let j = 0; j < results.length; j++) {
+              const idx = i + j
+              await saveToBlob(`stamps/${sessionId}/${idx}.png`, results[j])
+              send({ type: "stamp", index: idx, dataUrl: `data:image/png;base64,${results[j]}` })
+            }
           }
           send({ type: "done" })
         }

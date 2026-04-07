@@ -17,7 +17,7 @@ export default function SuccessInner() {
   const [phase, setPhase] = useState<Phase>("verifying")
   const [errorMessage, setErrorMessage] = useState("")
   const [masterDataURL, setMasterDataURL] = useState<string | null>(null)
-  const [stampDataURLs, setStampDataURLs] = useState<string[]>([])
+  const [stampDataURLs, setStampDataURLs] = useState<(string | null)[]>([])
   const [completedCount, setCompletedCount] = useState(0)
   const hasStarted = useRef(false)
 
@@ -26,6 +26,17 @@ export default function SuccessInner() {
     hasStarted.current = true
     startFlow(sessionId)
   }, [sessionId])
+
+  const blobUrlToDataUrl = async (url: string): Promise<string> => {
+    const res = await fetch(url)
+    const blob = await res.blob()
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result as string)
+      reader.onerror = () => reject(new Error("blob fetch failed"))
+      reader.readAsDataURL(blob)
+    })
+  }
 
   const startFlow = async (sid: string) => {
     let formData: FormData
@@ -36,13 +47,48 @@ export default function SuccessInner() {
       formData = data.formData
     } catch { setErrorMessage("ネットワークエラーが発生しました"); setPhase("error"); return }
 
+    // Check for existing saved stamps (reconnect / resume support)
+    let startIndex = 0
+    let masterBlobUrl = ""
+    const urls: (string | null)[] = Array(16).fill(null)
+    try {
+      const stampsRes = await fetch("/api/stamps?session_id=" + sid)
+      if (stampsRes.ok) {
+        const stampsData = await stampsRes.json() as { master: string | null; stamps: (string | null)[] }
+        if (stampsData.master) {
+          masterBlobUrl = stampsData.master
+          setMasterDataURL(stampsData.master)
+        }
+        const existing = stampsData.stamps ?? []
+        const loadedDataUrls = await Promise.all(
+          existing.map((u) => u ? blobUrlToDataUrl(u) : Promise.resolve(null))
+        )
+        loadedDataUrls.forEach((dataUrl, i) => { urls[i] = dataUrl })
+        const existingCount = loadedDataUrls.filter(Boolean).length
+        if (existingCount > 0) {
+          setStampDataURLs([...urls])
+          setCompletedCount(existingCount)
+          startIndex = existingCount
+        }
+        if (existingCount === 16) {
+          localStorage.removeItem("stampon_photo")
+          setPhase("done")
+          return
+        }
+      }
+    } catch { /* resume check failed — proceed with fresh generation */ }
+
     const photo = localStorage.getItem("stampon_photo")
-    if (!photo) { setErrorMessage("写真データが見つかりません。最初からやり直してください。\nご購入済みの場合はships.llc@gmail.comまでご連絡ください。"); setPhase("error"); return }
+    if (!photo && startIndex === 0) { setErrorMessage("写真データが見つかりません。最初からやり直してください。\nご購入済みの場合はships.llc@gmail.comまでご連絡ください。"); setPhase("error"); return }
 
     setPhase("generating")
     let res: Response
     try {
-      res = await fetch("/api/generate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ photo, ...formData }) })
+      res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photo: photo ?? "", ...formData, sessionId: sid, startIndex, masterBlobUrl }),
+      })
     } catch { setErrorMessage("ネットワークエラーが発生しました"); setPhase("error"); return }
 
     if (!res.ok || !res.body) { const msg = await res.json().catch(() => ({})) as { error?: string }; setErrorMessage(msg.error ?? "生成に失敗しました"); setPhase("error"); return }
@@ -50,7 +96,6 @@ export default function SuccessInner() {
     const reader = res.body.getReader()
     const decoder = new TextDecoder()
     let buffer = ""
-    const urls: string[] = []
     try {
       while (true) {
         const { done, value } = await reader.read()
@@ -63,7 +108,11 @@ export default function SuccessInner() {
           if (!line.startsWith("data: ")) continue
           const event = JSON.parse(line.slice(6)) as { type: string; dataUrl?: string; index?: number; message?: string }
           if (event.type === "master") { setMasterDataURL(event.dataUrl ?? null) }
-          else if (event.type === "stamp" && event.index !== undefined) { urls[event.index] = event.dataUrl ?? ""; setStampDataURLs([...urls]); setCompletedCount(event.index + 1) }
+          else if (event.type === "stamp" && event.index !== undefined) {
+            urls[event.index] = event.dataUrl ?? null
+            setStampDataURLs([...urls])
+            setCompletedCount(event.index + 1)
+          }
           else if (event.type === "error") { throw new Error(event.message ?? "生成に失敗しました") }
           else if (event.type === "done") { localStorage.removeItem("stampon_photo"); setPhase("done") }
         }
@@ -111,9 +160,9 @@ export default function SuccessInner() {
         {phase === "generating" && <div className="w-full bg-pink-100 rounded-full h-3 overflow-hidden"><div className="h-full rounded-full bg-gradient-to-r from-pink-400 to-purple-400 transition-all duration-500" style={{ width: (completedCount / STAMP_COUNT * 100) + "%" }} /></div>}
         {masterDataURL && <div className="flex flex-col items-center gap-2"><p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Master Character</p><img src={masterDataURL} alt="マスターキャラクター" className="w-32 h-32 rounded-2xl object-cover border-4 border-pink-200 shadow-lg" /></div>}
         <div className="grid grid-cols-4 gap-3 sm:gap-4">
-          {Array.from({ length: STAMP_COUNT }, (_, i) => <StampCard key={i} index={i} dataURL={stampDataURLs[i] ?? null} isGenerating={phase === "generating" && i === stampDataURLs.length} />)}
+          {Array.from({ length: STAMP_COUNT }, (_, i) => <StampCard key={i} index={i} dataURL={stampDataURLs[i] ?? null} isGenerating={phase === "generating" && i === completedCount} />)}
         </div>
-        {phase === "done" && <DownloadSection stampDataURLs={stampDataURLs} />}
+        {phase === "done" && <DownloadSection stampDataURLs={stampDataURLs.filter((s): s is string => s !== null)} />}
         {phase === "done" && <button onClick={() => router.push("/")} className="w-full py-3 rounded-full border-2 border-pink-300 text-pink-500 font-bold hover:bg-pink-50 transition-colors">🔄 もう一度作る</button>}
       </div>
     </div>
