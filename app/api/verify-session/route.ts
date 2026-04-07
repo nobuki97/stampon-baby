@@ -1,4 +1,4 @@
-﻿import { NextRequest } from 'next/server'
+import { NextRequest } from 'next/server'
 import Stripe from 'stripe'
 
 export async function GET(req: NextRequest) {
@@ -16,12 +16,10 @@ export async function GET(req: NextRequest) {
     }
     const metadata = session.metadata ?? {}
     const formData = {
-      breed: metadata.breed ?? '',
-      color: metadata.color ?? '',
-      pattern: metadata.pattern ?? '',
-      feature: metadata.feature ?? '',
-      petName: metadata.petName ?? '',
-      style: metadata.style ?? 'ghibli',
+      babyName: metadata.babyName ?? '',
+      gender: metadata.gender ?? 'unspecified',
+      features: JSON.parse(metadata.features ?? '[]'),
+      style: metadata.style ?? 'chibi',
       phrases: JSON.parse(metadata.phrases ?? '[]'),
     }
     return new Response(JSON.stringify({ ok: true, formData }), { status: 200, headers: { 'Content-Type': 'application/json' } })

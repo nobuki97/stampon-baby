@@ -9,20 +9,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { formData } = body as { formData: Record<string, unknown> }
     const metadata: Record<string, string> = {
-      breed: String(formData.breed ?? ''),
-      color: String(formData.color ?? ''),
-      pattern: String(formData.pattern ?? ''),
-      feature: String(formData.feature ?? ''),
-      petName: String(formData.petName ?? ''),
-      style: String(formData.style ?? 'ghibli'),
+      babyName: String(formData.babyName ?? ''),
+      gender: String(formData.gender ?? 'unspecified'),
+      features: JSON.stringify(formData.features ?? []),
+      style: String(formData.style ?? 'chibi'),
       phrases: JSON.stringify(formData.phrases ?? []),
     }
-    const origin = req.headers.get('origin') ?? 'https://stampon-two.vercel.app'
+    const origin = req.headers.get('origin') ?? 'https://baby.stampon.ai'
     const session = await stripe.checkout.sessions.create({
       line_items: [{
         price_data: {
           currency: 'jpy',
-          product_data: { name: 'STAMPON - ペットLINEスタンプ作成', description: '愛するペットのオリジナルLINEスタンプ16枚セット' },
+          product_data: { name: 'STAMPON for Baby - ベビーLINEスタンプ作成', description: 'うちの子のオリジナルLINEスタンプ16枚セット' },
           unit_amount: 480,
         },
         quantity: 1,

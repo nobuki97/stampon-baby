@@ -3,15 +3,15 @@ export default function TermsPage() {
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-black text-gray-700 mb-2">利用規約</h1>
-        <p className="text-xs text-gray-400 mb-8">最終更新日：2026年3月29日</p>
+        <p className="text-xs text-gray-400 mb-8">最終更新日：2026年4月3日</p>
         <div className="flex flex-col gap-8 text-sm text-gray-700 leading-relaxed">
           <section>
             <h2 className="font-black text-gray-600 mb-2">第1条（適用）</h2>
-            <p>本規約は、SHIPS.LLC合同会社（以下「当社」）が提供するWebサービス「STAMPON」（以下「本サービス」）の利用条件を定めるものです。ユーザーは本規約に同意の上、本サービスをご利用ください。</p>
+            <p>本規約は、SHIPS.LLC合同会社（以下「当社」）が提供するWebサービス「STAMPON for Baby」（以下「本サービス」）の利用条件を定めるものです。ユーザーは本規約に同意の上、本サービスをご利用ください。</p>
           </section>
           <section>
             <h2 className="font-black text-gray-600 mb-2">第2条（サービス内容）</h2>
-            <p>本サービスは、ユーザーがアップロードしたペット写真をもとにAIがLINEスタンプ画像16枚を生成し、ZIPファイルとして提供するサービスです。</p>
+            <p>本サービスは、ユーザーがアップロードした赤ちゃんの写真をもとにAIがベビースタンプ画像16枚を生成し、ZIPファイルとして提供するサービスです。</p>
           </section>
           <section>
             <h2 className="font-black text-gray-600 mb-2">第3条（料金・支払い）</h2>
