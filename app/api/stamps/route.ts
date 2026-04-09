@@ -7,22 +7,25 @@ export async function GET(req: NextRequest) {
     return Response.json({ error: 'session_idがありません' }, { status: 400 })
   }
 
-  const { blobs } = await list({ prefix: `stamps/${sessionId}/` })
-
   let master: string | null = null
   const stamps: (string | null)[] = Array(16).fill(null)
 
-  for (const blob of blobs) {
-    const name = blob.pathname.split('/').pop() ?? ''
-    if (name === 'master.png') {
-      master = blob.url
-    } else {
-      const match = name.match(/^(\d+)\.png$/)
-      if (match) {
-        const idx = parseInt(match[1], 10)
-        if (idx >= 0 && idx < 16) stamps[idx] = blob.url
+  try {
+    const { blobs } = await list({ prefix: `stamps/${sessionId}/` })
+    for (const blob of blobs) {
+      const name = blob.pathname.split('/').pop() ?? ''
+      if (name === 'master.png') {
+        master = blob.url
+      } else {
+        const match = name.match(/^(\d+)\.png$/)
+        if (match) {
+          const idx = parseInt(match[1], 10)
+          if (idx >= 0 && idx < 16) stamps[idx] = blob.url
+        }
       }
     }
+  } catch {
+    return Response.json({ master: null, stamps: Array(16).fill(null) })
   }
 
   return Response.json({ master, stamps })

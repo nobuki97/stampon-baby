@@ -27,17 +27,6 @@ export default function SuccessInner() {
     startFlow(sessionId)
   }, [sessionId])
 
-  const blobUrlToDataUrl = async (url: string): Promise<string> => {
-    const res = await fetch(url)
-    const blob = await res.blob()
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = () => reject(new Error("blob fetch failed"))
-      reader.readAsDataURL(blob)
-    })
-  }
-
   const startFlow = async (sid: string) => {
     let formData: FormData
     try {
@@ -60,15 +49,13 @@ export default function SuccessInner() {
           setMasterDataURL(stampsData.master)
         }
         const existing = stampsData.stamps ?? []
-        const loadedDataUrls = await Promise.all(
-          existing.map((u) => u ? blobUrlToDataUrl(u) : Promise.resolve(null))
-        )
-        loadedDataUrls.forEach((dataUrl, i) => { urls[i] = dataUrl })
-        const existingCount = loadedDataUrls.filter(Boolean).length
+        existing.forEach((u, i) => { urls[i] = u ?? null })
+        const existingCount = existing.filter(Boolean).length
         if (existingCount > 0) {
           setStampDataURLs([...urls])
           setCompletedCount(existingCount)
-          startIndex = existingCount
+          const firstNull = existing.findIndex(u => u === null)
+          startIndex = firstNull === -1 ? 16 : firstNull
         }
         if (existingCount === 16) {
           localStorage.removeItem("stampon_photo")
@@ -132,13 +119,20 @@ export default function SuccessInner() {
         <p className="text-4xl mb-4">😢</p>
         <h2 className="text-xl font-black text-gray-700 mb-3">エラーが発生しました</h2>
         <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 text-sm text-red-600 mb-6 whitespace-pre-line">{errorMessage}</div>
+        <button onClick={() => window.location.reload()} className="w-full py-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 text-white font-bold shadow-md mb-2">🔄 再接続して続きから再開する</button>
         <button onClick={() => router.push("/")} className="w-full py-3 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 text-white font-bold shadow-md">トップに戻る</button>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 py-8 px-4">
+    <>
+    {phase === "generating" && (
+      <div className="fixed top-0 left-0 right-0 z-50 bg-red-500 text-white text-center text-sm font-bold py-2 px-4 shadow-md">
+        ⚠️ 生成中は画面をスリープにしないでください
+      </div>
+    )}
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-purple-50 py-8 px-4" style={phase === "generating" ? { paddingTop: "2.5rem" } : {}}>
       <header className="text-center mb-8">
         <h1 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-2">
           <span>STAMP</span>
@@ -166,5 +160,6 @@ export default function SuccessInner() {
         {phase === "done" && <button onClick={() => router.push("/")} className="w-full py-3 rounded-full border-2 border-pink-300 text-pink-500 font-bold hover:bg-pink-50 transition-colors">🔄 もう一度作る</button>}
       </div>
     </div>
+    </>
   )
 }

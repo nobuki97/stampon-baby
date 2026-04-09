@@ -20,6 +20,7 @@ async function resizeDataUrl(dataUrl: string, w: number, h: number): Promise<str
       resolve(canvas.toDataURL('image/png'))
     }
     img.onerror = () => reject(new Error('image load failed'))
+    img.crossOrigin = 'anonymous'
     img.src = dataUrl
   })
 }
