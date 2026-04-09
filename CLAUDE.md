@@ -30,9 +30,69 @@
 
 ### 🟢 将来対応（英語版・子供版追加時）
 - [ ] モノレポ × NEXT_PUBLIC_VARIANT方式への移行（設計済み）
-  - app/config/pet.ts、app/config/baby.ts で設定を完全分離
-  - 1リポジトリ・1ブランチで全シリーズ管理
-  - 新シリーズ追加が設定ファイル1本で完結
+
+#### 移行後のディレクトリ構成
+
+```
+stampon-monorepo/
+├── app/
+│   ├── config/
+│   │   ├── index.ts        ← NEXT_PUBLIC_VARIANT を読んで型安全にエクスポート
+│   │   ├── baby.ts         ← Baby版の全設定（テキスト・ポーズ・メタデータ等）
+│   │   └── pet.ts          ← Pet版の全設定
+│   ├── components/
+│   │   ├── baby/
+│   │   │   ├── CharacterSetup.tsx  ← baby専用
+│   │   │   └── StampGenerator.tsx  ← baby専用
+│   │   ├── pet/
+│   │   │   ├── CharacterSetup.tsx  ← pet専用
+│   │   │   └── StampGenerator.tsx  ← pet専用
+│   │   ├── StampCard.tsx           ← 共通（変更なし）
+│   │   └── DownloadSection.tsx     ← 共通（変更なし）
+│   ├── api/
+│   │   ├── generate/route.ts       ← variant分岐（キャラクター説明・プロンプトが異なる）
+│   │   ├── checkout/route.ts       ← variant分岐（メタデータフィールド・商品名が異なる）
+│   │   ├── verify-session/route.ts ← variant分岐（メタデータフィールドが異なる）
+│   │   ├── generate-stamp/route.ts ← 共通（両版で完全一致）
+│   │   └── stamps/route.ts         ← 共通（両版で完全一致）
+│   ├── layout.tsx                  ← variant別metadata
+│   └── page.tsx                    ← variantでコンポーネント切替
+└── package.json
+```
+
+#### Vercel設定（移行後）
+
+| Vercelプロジェクト | GitHubリポジトリ | 環境変数 |
+|---|---|---|
+| `stampon-for-baby` | nobuki97/stampon-monorepo | `NEXT_PUBLIC_VARIANT=baby` |
+| `stampon` | nobuki97/stampon-monorepo | `NEXT_PUBLIC_VARIANT=pet` |
+
+両プロジェクトとも同じ `main` ブランチをデプロイ → バグ修正が1回で両方に反映。
+
+#### 両版の差分まとめ（移行時の参考）
+
+| ファイル | 状態 |
+|---|---|
+| `app/api/generate-stamp/route.ts` | 完全一致（共通化そのまま） |
+| `app/api/stamps/route.ts` | 完全一致（共通化そのまま） |
+| `app/lib/constants.ts` | STAMP_TEXTS・POSES が異なる。EXPRESSIONSはbaby版のみ |
+| `app/layout.tsx` | metadataのみ異なる |
+| `app/components/CharacterSetup.tsx` | 入力項目が全く異なる（赤ちゃん情報 vs ペット情報） |
+| `app/components/StampGenerator.tsx` | 大幅に異なる（383行 vs 340行）。baby版にYoutubeSection・LineGuide・FACE_FEATURESあり |
+| `app/api/generate/route.ts` | buildBabyDesc vs buildCharacterDesc。プロンプト・デフォルトstyleが異なる |
+| `app/api/checkout/route.ts` | メタデータフィールド名・商品名・originが異なる |
+| `app/api/verify-session/route.ts` | メタデータフィールド名が異なる |
+
+#### 移行手順（実施時）
+
+1. 新リポジトリ `nobuki97/stampon-monorepo` 作成
+2. `app/config/` ディレクトリと `baby.ts` / `pet.ts` / `index.ts` 作成
+3. 共通コンポーネント（StampCard, DownloadSection, generate-stamp, stamps）をそのまま移行
+4. variant別コンポーネントを `app/components/baby/` と `app/components/pet/` に分離
+5. API routeを `process.env.NEXT_PUBLIC_VARIANT` で分岐
+6. `page.tsx` / `layout.tsx` のvariant分岐実装
+7. Vercel両プロジェクトの環境変数に `NEXT_PUBLIC_VARIANT` を設定
+8. 旧リポジトリ（stampon / stampon-baby）をアーカイブ
 
 ### ✅ 実装済み
 - [x] 生成画像のサーバー一時保存（Vercel Blob）
