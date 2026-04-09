@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server"
 import { put } from "@vercel/blob"
+import Stripe from "stripe"
 import { POSES, EXPRESSIONS } from "@/app/lib/constants"
 
 const OPENAI_BASE = "https://api.openai.com/v1"
@@ -55,6 +56,7 @@ async function generateMaster(apiKey: string, photoBase64: string, babyName: str
   formData.append("prompt", `Transform this baby photo into a cute kawaii LINE sticker character. Style: ${stylePrompt}, chibi proportions with oversized round head, large expressive eyes, full body, centered on white background, high quality sticker art. Appearance: ${genderStyling}. ${featureDescription} ${nameEmbroidery} Rosy chubby cheeks, button nose, small cute mouth.`)
   formData.append("n", "1")
   formData.append("size", "1024x1024")
+  formData.append("quality", "medium")
   const res = await fetch(`${OPENAI_BASE}/images/edits`, { method: "POST", headers: { Authorization: `Bearer ${apiKey}` }, body: formData })
   if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error((err as { error?: { message?: string } }).error?.message ?? "マスターキャラクター生成に失敗しました") }
   const data = await res.json() as { data: { b64_json: string }[] }
@@ -76,6 +78,7 @@ async function generateStamp(apiKey: string, babyName: string, gender: string, f
     fd.append("prompt", prompt)
     fd.append("n", "1")
     fd.append("size", "1024x1024")
+    fd.append("quality", "medium")
     const res = await fetch(`${OPENAI_BASE}/images/edits`, { method: "POST", headers: { Authorization: `Bearer ${apiKey}` }, body: fd })
     if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error((err as { error?: { message?: string } }).error?.message ?? `スタンプ ${index + 1} の生成に失敗しました`) }
     const data = await res.json() as { data: { b64_json: string }[] }
@@ -84,7 +87,7 @@ async function generateStamp(apiKey: string, babyName: string, gender: string, f
   const res = await fetch(`${OPENAI_BASE}/images/generations`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({ model: "gpt-image-1", prompt, n: 1, size: "1024x1024" }),
+    body: JSON.stringify({ model: "gpt-image-1", prompt, n: 1, size: "1024x1024", quality: "medium" }),
   })
   if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error((err as { error?: { message?: string } }).error?.message ?? `スタンプ ${index + 1} の生成に失敗しました`) }
   const data = await res.json() as { data: { b64_json: string }[] }
@@ -114,6 +117,21 @@ export async function POST(req: NextRequest) {
     if (!trial && phrases.length !== 16) throw new Error("phrases must have 16 items")
   } catch {
     return new Response(JSON.stringify({ error: "リクエストが不正です" }), { status: 400, headers: { "Content-Type": "application/json" } })
+  }
+
+  if (!trial) {
+    if (!sessionId) {
+      return new Response(JSON.stringify({ error: "決済セッションが必要です" }), { status: 401, headers: { "Content-Type": "application/json" } })
+    }
+    try {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2026-03-25.dahlia" })
+      const session = await stripe.checkout.sessions.retrieve(sessionId)
+      if (session.payment_status !== "paid") {
+        return new Response(JSON.stringify({ error: "決済が完了していません" }), { status: 401, headers: { "Content-Type": "application/json" } })
+      }
+    } catch {
+      return new Response(JSON.stringify({ error: "決済確認に失敗しました" }), { status: 401, headers: { "Content-Type": "application/json" } })
+    }
   }
 
   const saveToBlob = async (pathname: string, b64: string) => {
